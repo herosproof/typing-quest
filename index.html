@@ -296,6 +296,19 @@
     padding: 8px 24px;
     letter-spacing: 0.05em;
   }
+  .keep-typing {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(0.42rem, 1.2vw, 0.55rem);
+    color: var(--accent2);
+    text-shadow: 0 0 8px var(--accent2);
+    letter-spacing: 0.04em;
+    animation: nudgePulse 1.2s ease-in-out infinite;
+  }
+  @keyframes nudgePulse {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.04); }
+  }
+  .keep-typing.hidden { display: none; }
   .answer-reveal.hidden { display: none; }
   .answer-reveal.visible {
     display: block;
@@ -425,7 +438,8 @@
   .btn-play-again:active { transform: translateY(2px); }
 
   .hidden { display: none !important; }
-</style>
+
+  </style>
 </head>
 <body>
 
@@ -481,6 +495,7 @@
       <div class="question-text" id="question-text">Type in English!</div>
       <div class="reveal-countdown" id="reveal-countdown"></div>
       <div class="answer-reveal hidden" id="answer-reveal"></div>
+      <div class="keep-typing hidden" id="keep-typing">⌨️ Keep typing! / まだタイプできるよ！🌟</div>
     </div>
 
     <div class="input-area">
@@ -564,14 +579,17 @@ const questions = [
   { type:'vocab', hint:'🟢 みどり',              answer:'green',           accept:['green'] },
   { type:'vocab', hint:'🟡 きいろ',              answer:'yellow',          accept:['yellow'] },
   { type:'vocab', hint:'⚪ しろ（いろ）',         answer:'white',           accept:['white'] },
+  { type:'vocab', hint:'🟠 オレンジ',              answer:'orange',          accept:['orange'] },
+  { type:'vocab', hint:'⚫ くろ',                  answer:'black',           accept:['black'] },
+  { type:'vocab', hint:'🟣 むらさき',              answer:'purple',          accept:['purple'] },
   // Phrases
   { type:'phrase', hint:'🌍 どこから きましたか？',  answer:'where are you from',  accept:['where are you from','where are you from?'] },
   { type:'phrase', hint:'🙋 あなたはだれ？',         answer:'who are you',          accept:['who are you','who are you?'] },
   { type:'phrase', hint:'❤️ なにが すき？',          answer:'what do you like',     accept:['what do you like','what do you like?'] },
   { type:'phrase', hint:'🎯 なにを しますか？',      answer:'what do you do',       accept:['what do you do','what do you do?'] },
   { type:'phrase', hint:'💭 ゆめはなに？',           answer:'what is your dream',   accept:['what is your dream',"what's your dream"] },
-  { type:'phrase', hint:'🚀 いっしょに！',           answer:"let's go",             accept:["let's go",'lets go'] },
-  { type:'phrase', hint:'✊ できるよ！',             answer:'we can do it',         accept:['we can do it','we can do it!'] },
+  { type:'phrase', hint:'🚀 行こう！',               answer:"let's go",             accept:["let's go",'lets go','ikou'] },
+  { type:'phrase', hint:'✊ わたしはできる！',        answer:'i can do it',          accept:['i can do it','i can do it!'] },
   { type:'phrase', hint:'🌅 おはようございます！',   answer:'good morning',         accept:['good morning','good morning!'] },
   { type:'phrase', hint:'👋 こんにちは！',           answer:'hello',                accept:['hello','hi'] },
   { type:'phrase', hint:'🙏 ありがとう！',           answer:'thank you',            accept:['thank you','thanks'] },
@@ -662,6 +680,7 @@ function loadQuestion() {
   document.getElementById('question-text').textContent = 'Type in English!';
   document.getElementById('answer-reveal').textContent = '';
   document.getElementById('answer-reveal').className = 'answer-reveal hidden';
+  document.getElementById('keep-typing').classList.add('hidden');
   document.getElementById('reveal-countdown').textContent = '';
 
   const badge = document.getElementById('category-badge');
@@ -699,6 +718,7 @@ function startTimer() {
       const rev = document.getElementById('answer-reveal');
       rev.textContent = '👉 ' + gameQuestions[current].answer;
       rev.className = 'answer-reveal visible';
+      document.getElementById('keep-typing').classList.remove('hidden');
     }
     if (timer <= 0) { clearInterval(timerInterval); timeUp(); }
   }, 1000);
@@ -710,11 +730,13 @@ function updateTimerUI() {
   bar.style.width = (timer / TIME_PER_Q * 100) + '%';
   num.textContent = timer;
   const low = timer <= 5;
+  if (low && timer > 0) startTimerWarning(); else if (!low) stopTimerWarning();
   bar.className = 'timer-bar' + (low ? ' low' : '');
   num.className = 'timer-num' + (low ? ' low' : '');
 }
 
 function timeUp() {
+  stopTimerWarning();
   if (answered) return;
   answered = true;
   showFeedback('⏰ Time! → ' + gameQuestions[current].answer, false);
@@ -726,6 +748,7 @@ function timeUp() {
 
 function handleKey(e)   { if (e.key === 'Enter') checkAnswer(); }
 function handleInput(e) {
+  sfxType();
   if (answered) return;
   const q = gameQuestions[current];
   if (q.type === 'vocab') {
@@ -741,6 +764,7 @@ function checkAnswer() {
   const val = inp.value.trim().toLowerCase();
   if (!val) return;
   answered = true;
+  stopTimerWarning();
   clearInterval(timerInterval);
 
   if (q.accept.includes(val)) {
@@ -748,12 +772,14 @@ function checkAnswer() {
     score += pts;
     document.getElementById('score').textContent = score;
     inp.className = 'type-input correct-flash';
+    sfxCorrect();
     showFeedback('✅ Correct! ＋' + pts + 'pts', true);
     spawnParticles(inp, ['⭐','✨','💎','🎉']);
     updateDot(current, 'done');
     setTimeout(nextQuestion, 900);
   } else {
     inp.className = 'type-input wrong-flash';
+    sfxWrong();
     showFeedback('❌ → ' + q.answer, false);
     recordMistake(val, q);
     loseLife();
@@ -810,6 +836,7 @@ function endGame() {
   show('screen-result');
   const pct = score / (QUESTION_COUNT * 100);
   document.getElementById('final-score').textContent = score;
+  stopTimerWarning();
 
   let stars, emoji, cls, title, sub;
   if (pct >= 0.8) {
@@ -832,6 +859,7 @@ function endGame() {
   tEl.textContent = title;
   document.getElementById('result-sub').textContent = sub;
 
+  sfxFanfare(stars);
   setTimeout(() => {
     for (let i = 1; i <= 3; i++) {
       const s = document.getElementById(`star${i}`);
@@ -858,6 +886,73 @@ function endGame() {
 function goTitle() {
   document.getElementById('mistakes-list').classList.add('hidden');
   show('screen-title');
+}
+
+
+// ===== WEB AUDIO SFX =====
+let audioCtx = null;
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playTone(freq, type, duration, vol=0.3, fadeOut=true) {
+  try {
+    const ctx = getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    if (fadeOut) gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration);
+  } catch(e) {}
+}
+
+function sfxCorrect() {
+  playTone(523, 'sine', 0.12, 0.25);
+  setTimeout(() => playTone(659, 'sine', 0.12, 0.25), 80);
+  setTimeout(() => playTone(784, 'sine', 0.2,  0.25), 160);
+}
+
+function sfxWrong() {
+  playTone(220, 'sawtooth', 0.08, 0.2);
+  setTimeout(() => playTone(180, 'sawtooth', 0.15, 0.2), 80);
+}
+
+function sfxType() {
+  playTone(900 + Math.random()*200, 'triangle', 0.07, 0.18);
+}
+
+function sfxTimerWarn() {
+  playTone(880, 'square', 0.06, 0.1);
+}
+
+function sfxFanfare(starCount) {
+  if (starCount === 3) {
+    // Big victory: ascending arpeggio
+    const notes = [523,659,784,1047];
+    notes.forEach((n,i) => setTimeout(() => playTone(n,'sine',0.25,0.3), i*120));
+    setTimeout(() => playTone(1047,'sine',0.5,0.3), notes.length*120);
+  } else if (starCount === 2) {
+    const notes = [440,554,659];
+    notes.forEach((n,i) => setTimeout(() => playTone(n,'sine',0.22,0.28), i*110));
+  } else {
+    playTone(330,'sine',0.15,0.2);
+    setTimeout(() => playTone(294,'sine',0.2,0.2), 150);
+  }
+}
+
+let timerWarnInterval = null;
+
+function startTimerWarning() {
+  stopTimerWarning();
+  timerWarnInterval = setInterval(sfxTimerWarn, 1000);
+}
+function stopTimerWarning() {
+  if (timerWarnInterval) { clearInterval(timerWarnInterval); timerWarnInterval = null; }
 }
 
 setupBackground();
