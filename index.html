@@ -250,6 +250,7 @@
   }
   .cat-vocab  { background: rgba(255,233,77,0.15); color: var(--accent1); border: 1px solid rgba(255,233,77,0.3); }
   .cat-phrase { background: rgba(255,77,206,0.15); color: var(--accent2); border: 1px solid rgba(255,77,206,0.3); }
+  .cat-place  { background: rgba(77,166,255,0.15); color: var(--accent4); border: 1px solid rgba(77,166,255,0.3); }
 
   .jp-hint { font-size: clamp(1rem, 3vw, 1.25rem); color: var(--soft); font-weight: 700; }
 
@@ -451,8 +452,8 @@
   <div id="screen-title">
     <div class="hero-emoji">⌨️</div>
     <div class="logo-wrap">
-      <div class="logo">HERO'S PROOF<br></div>
-      <div class="subtitle"><br>✦ TYPING QUEST ✦</div>
+      <div class="logo">HERO'S PROOF</div>
+      <div class="subtitle">✦ TYPING QUEST ✦</div>
     </div>
 
     <div class="instructions">
@@ -613,19 +614,51 @@ const questions = [
   { type:'vocab', hint:'👨‍👩‍👧 かぞく',              answer:'family',          accept:['family'] },
   { type:'vocab', hint:'🐵 さる',                 answer:'monkey',          accept:['monkey'] },
   { type:'vocab', hint:'🐲 ドラゴン',              answer:'dragon',          accept:['dragon'] },
-  // Phrases
-  { type:'phrase', hint:'🌍 どこから きましたか？',  answer:'where are you from',  accept:['where are you from','where are you from?'] },
-  { type:'phrase', hint:'🙋 あなたはだれ？',         answer:'who are you',          accept:['who are you','who are you?'] },
-  { type:'phrase', hint:'❤️ なにが すき？',          answer:'what do you like',     accept:['what do you like','what do you like?'] },
-  { type:'phrase', hint:'🎯 なにを しますか？',      answer:'what do you do',       accept:['what do you do','what do you do?'] },
-  { type:'phrase', hint:'💭 ゆめはなに？',           answer:'what is your dream',   accept:['what is your dream',"what's your dream"] },
-  { type:'phrase', hint:'🚀 行こう！',               answer:"let's go",             accept:["let's go",'lets go','ikou'] },
-  { type:'phrase', hint:'✊ わたしはできる！',        answer:'i can do it',          accept:['i can do it','i can do it!'] },
-  { type:'phrase', hint:'🌅 おはようございます！',   answer:'good morning',         accept:['good morning','good morning!'] },
-  { type:'phrase', hint:'👋 こんにちは！',           answer:'hello',                accept:['hello','hi'] },
-  { type:'phrase', hint:'🙏 ありがとう！',           answer:'thank you',            accept:['thank you','thanks'] },
-  { type:'phrase', hint:'💖 すきです！',             answer:'i like it',            accept:['i like it','i like'] },
-  { type:'phrase', hint:'😊 げんきですか？',         answer:'how are you',          accept:['how are you','how are you?'] },
+  // Phrases (case-sensitive, punctuation required)
+  { type:'phrase', caseSensitive:true, hint:'🌍 どこから きましたか？',  answer:'Where are you from?',  accept:['Where are you from?'] },
+  { type:'phrase', caseSensitive:true, hint:'🙋 あなたはだれ？',         answer:'Who are you?',         accept:['Who are you?'] },
+  { type:'phrase', caseSensitive:true, hint:'❤️ なにが すき？',          answer:'What do you like?',    accept:['What do you like?'] },
+  { type:'phrase', caseSensitive:true, hint:'🎯 なにを しますか？',      answer:'What do you do?',      accept:['What do you do?'] },
+  { type:'phrase', caseSensitive:true, hint:'💭 ゆめはなに？',           answer:'What is your dream?',  accept:['What is your dream?'] },
+  { type:'phrase', caseSensitive:true, hint:'🚀 行こう！',               answer:"Let's go!",            accept:["Let's go!"] },
+  { type:'phrase', caseSensitive:true, hint:'✊ わたしはできる！',        answer:'I can do it!',         accept:['I can do it!'] },
+  { type:'phrase', caseSensitive:true, hint:'🌅 おはようございます！',   answer:'Good morning!',        accept:['Good morning!'] },
+  { type:'phrase', caseSensitive:true, hint:'👋 こんにちは！',           answer:'Hello!',               accept:['Hello!', 'Hi!'] },
+  { type:'phrase', caseSensitive:true, hint:'🙏 ありがとう！',           answer:'Thank you!',           accept:['Thank you!', 'Thanks!'] },
+  { type:'phrase', caseSensitive:true, hint:'💖 すきです！',             answer:'I like it!',           accept:['I like it!'] },
+  { type:'phrase', caseSensitive:true, hint:'😊 げんきですか？',         answer:'How are you?',         accept:['How are you?'] },
+  // Countries (case-sensitive proper nouns)
+  { type:'place', caseSensitive:true, hint:'🇯🇵 にほん',          answer:'Japan',           accept:['Japan'] },
+  { type:'place', caseSensitive:true, hint:'🇺🇸 アメリカ',        answer:'America',         accept:['America'] },
+  { type:'place', caseSensitive:true, hint:'🇦🇺 オーストラリア',  answer:'Australia',       accept:['Australia'] },
+  { type:'place', caseSensitive:true, hint:'🇨🇦 カナダ',          answer:'Canada',          accept:['Canada'] },
+  { type:'place', caseSensitive:true, hint:'🇨🇳 ちゅうごく',      answer:'China',           accept:['China'] },
+  { type:'place', caseSensitive:true, hint:'🇰🇷 かんこく',        answer:'Korea',           accept:['Korea'] },
+  { type:'place', caseSensitive:true, hint:'🇫🇷 フランス',        answer:'France',          accept:['France'] },
+  { type:'place', caseSensitive:true, hint:'🇮🇹 イタリア',        answer:'Italy',           accept:['Italy'] },
+  { type:'place', caseSensitive:true, hint:'🇧🇷 ブラジル',        answer:'Brazil',          accept:['Brazil'] },
+  { type:'place', caseSensitive:true, hint:'🇬🇧 イギリス',        answer:'the U.K.',        accept:['the U.K.', 'the UK'] },
+  { type:'place', caseSensitive:true, hint:'🇬🇺 グアム',          answer:'Guam',            accept:['Guam'] },
+  { type:'place', caseSensitive:true, hint:'🇵🇭 フィリピン',      answer:'the Philippines', accept:['the Philippines'] },
+  { type:'place', caseSensitive:true, hint:'🇳🇿 ニュージーランド', answer:'New Zealand',     accept:['New Zealand'] },
+  { type:'place', caseSensitive:true, hint:'🇮🇳 インド',          answer:'India',           accept:['India'] },
+  { type:'place', caseSensitive:true, hint:'🇪🇬 エジプト',        answer:'Egypt',           accept:['Egypt'] },
+  { type:'place', caseSensitive:true, hint:'🇬🇭 ガーナ',          answer:'Ghana',           accept:['Ghana'] },
+  { type:'place', caseSensitive:true, hint:'🇲🇽 メキシコ',        answer:'Mexico',          accept:['Mexico'] },
+  { type:'place', caseSensitive:true, hint:'🇵🇪 ペルー',          answer:'Peru',            accept:['Peru'] },
+  { type:'place', caseSensitive:true, hint:'🇳🇴 ノルウェー',      answer:'Norway',          accept:['Norway'] },
+  { type:'place', caseSensitive:true, hint:'🇩🇪 ドイツ',          answer:'Germany',         accept:['Germany'] },
+  // Japanese prefectures (case-sensitive proper nouns)
+  { type:'place', caseSensitive:true, hint:'🗼 とうきょうと',     answer:'Tokyo',           accept:['Tokyo'] },
+  { type:'place', caseSensitive:true, hint:'🏯 おおさかふ',       answer:'Osaka',           accept:['Osaka'] },
+  { type:'place', caseSensitive:true, hint:'⛩️ きょうとふ',       answer:'Kyoto',           accept:['Kyoto'] },
+  { type:'place', caseSensitive:true, hint:'🦊 ほっかいどう',     answer:'Hokkaido',        accept:['Hokkaido'] },
+  { type:'place', caseSensitive:true, hint:'🌺 おきなわけん',     answer:'Okinawa',         accept:['Okinawa'] },
+  { type:'place', caseSensitive:true, hint:'🕊️ ひろしまけん',     answer:'Hiroshima',       accept:['Hiroshima'] },
+  { type:'place', caseSensitive:true, hint:'🍜 ふくおかけん',     answer:'Fukuoka',         accept:['Fukuoka'] },
+  { type:'place', caseSensitive:true, hint:'🚗 あいちけん',       answer:'Aichi',           accept:['Aichi'] },
+  { type:'place', caseSensitive:true, hint:'🗻 やまなしけん',     answer:'Yamanashi',       accept:['Yamanashi'] },
+  { type:'place', caseSensitive:true, hint:'🦌 ならけん',         answer:'Nara',            accept:['Nara'] },
 ];
 
 const QUESTION_COUNT    = 10;
@@ -718,6 +751,9 @@ function loadQuestion() {
   if (q.type === 'vocab') {
     badge.textContent = '📚 VOCABULARY / たんご';
     badge.className = 'category-badge cat-vocab';
+  } else if (q.type === 'place') {
+    badge.textContent = '🌍 PLACE / ちめい';
+    badge.className = 'category-badge cat-place';
   } else {
     badge.textContent = '💬 PHRASE / フレーズ';
     badge.className = 'category-badge cat-phrase';
@@ -782,17 +818,17 @@ function handleInput(e) {
   sfxType();
   if (answered) return;
   const q = gameQuestions[current];
-  if (q.type === 'vocab') {
-    const v = e.target.value.trim().toLowerCase();
-    if (q.accept.includes(v)) checkAnswer();
-  }
+  const raw = e.target.value.trim();
+  const v = q.caseSensitive ? raw : raw.toLowerCase();
+  if (q.accept.includes(v)) checkAnswer();
 }
 
 function checkAnswer() {
   if (answered) return;
   const q = gameQuestions[current];
   const inp = document.getElementById('type-input');
-  const val = inp.value.trim().toLowerCase();
+  const raw = inp.value.trim();
+  const val = q.caseSensitive ? raw : raw.toLowerCase();
   if (!val) return;
   answered = true;
   stopTimerWarning();
