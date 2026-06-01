@@ -3,458 +3,490 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Hero's Proof – Typing Game</title>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<title>Hero's Proof – Typing Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Kosugi+Maru&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a1a;
-    --panel: #13132b;
-    --border: #3a2fff;
-    --accent1: #ffe94d;
-    --accent2: #ff4dce;
-    --accent3: #4dffb8;
-    --accent4: #4da6ff;
-    --text: #ffffff;
-    --soft: #b0b8e8;
-    --correct: #4dffb8;
-    --wrong: #ff4d6e;
-    --star: #ffe94d;
+    --bg:           #3a2558;
+    --bg2:          #2a1845;
+    --cream:        #f5eedc;
+    --card-bg:      rgba(245,238,220,0.95);
+    --border-gold:  rgba(245,158,11,0.25);
+    --purple:       #9060c0;
+    --purple-light: #c8a0e0;
+    --purple-pale:  #ede0f8;
+    --purple-dark:  #4a3870;
+    --gold:         #c9a030;
+    --gold-light:   #f0d060;
+    --gold-pale:    #f8f0c0;
+    --tan:          #c4a882;
+    --beige:        #d9c9a8;
+    --brown:        #5c2810;
+    --text-dark:    #1e1235;
+    --text-soft:    #3a2558;
+    --text-muted:   rgba(200,160,224,0.75);
+    --red:          #c83030;
+    --red-pale:     #fee2e2;
+    --green:        #4a9040;
+    --green-pale:   #d0e8b0;
+    --mauve:        #c07888;
+    --shadow:       rgba(0,0,0,0.4);
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { height: 100%; }
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { height:100%; }
 
   body {
-    font-family: 'Nunito', sans-serif;
+    font-family: 'Fredoka', 'Kosugi Maru', sans-serif;
     background: var(--bg);
-    color: var(--text);
+    color: var(--text-dark);
     min-height: 100dvh;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* NO overflow:hidden — allows scrolling on mobile */
     position: relative;
-    padding: 16px 12px 40px;
+    padding: 16px 12px 48px;
   }
 
-  /* Animated star background */
-  .stars {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-  .star {
+  /* ── Starfield — exactly matching v9 sugoroku ── */
+  .starfield { position:fixed; inset:0; pointer-events:none; z-index:0; }
+  .starfield span {
     position: absolute;
-    border-radius: 50%;
-    background: white;
-    animation: twinkle var(--dur) ease-in-out infinite;
-    opacity: 0;
+    animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s);
+    display: flex; align-items: center; justify-content: center;
+    font-size: var(--sz, 1rem);
+    color: var(--col, #fde68a);
+    text-shadow: 0 0 6px var(--col, #fde68a);
+    line-height: 1;
   }
   @keyframes twinkle {
-    0%, 100% { opacity: 0; transform: scale(0.5); }
-    50% { opacity: 0.8; transform: scale(1); }
-  }
-
-  /* Floating pixel crystals */
-  .crystal {
-    position: fixed;
-    font-size: 1.5rem;
-    animation: floatCrystal var(--dur) ease-in-out infinite;
-    opacity: 0.18;
-    pointer-events: none;
-    z-index: 0;
-  }
-  @keyframes floatCrystal {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(10deg); }
+    0%,100%{ opacity:0; transform:scale(.3) rotate(0deg) }
+    50%    { opacity:.9; transform:scale(1) rotate(20deg) }
   }
 
   .container {
-    position: relative;
-    z-index: 1;
-    width: min(600px, 95vw);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0;
+    position:relative; z-index:1;
+    width:min(600px,95vw);
+    display:flex; flex-direction:column;
+    align-items:center; gap:0;
   }
 
-  /* ===== TITLE SCREEN ===== */
+  /* ════════════ TITLE SCREEN ════════════ */
   #screen-title {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    text-align: center;
+    display:flex; flex-direction:column;
+    align-items:center; gap:20px; text-align:center;
   }
 
-  .logo-wrap { position: relative; }
+  /* Header — dark like sugoroku header */
+  .title-header {
+    width:100%;
+    background: linear-gradient(160deg, #2a1845 0%, #1e1235 60%, #150d28 100%);
+    padding: 28px 20px 20px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 24px rgba(124,58,237,0.35);
+    border-bottom: 1px solid rgba(167,139,250,0.2);
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 4px;
+    overflow: hidden;
+  }
+  .title-header::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(144,96,192,0.22) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .logo-img {
+    max-height: 160px; max-width: 92%;
+    object-fit: contain; display: block;
+    margin: 0 auto 8px;
+    position: relative; z-index: 1;
+    filter: drop-shadow(0 2px 16px rgba(167,139,250,0.5));
+  }
+  .title-emblem {
+    font-size:3rem; display:block;
+    margin-bottom:8px; position:relative; z-index:1;
+    animation:emblemFloat 3s ease-in-out infinite;
+    filter:drop-shadow(0 0 16px rgba(201,160,48,0.5));
+  }
+  @keyframes emblemFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 
   .logo {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(1rem, 4vw, 1.4rem);
-    color: var(--accent1);
-    text-shadow:
-      0 0 10px var(--accent1),
-      0 0 30px rgba(255,233,77,0.4),
-      3px 3px 0px #a07800;
-    line-height: 1.6;
-    animation: logoPulse 2s ease-in-out infinite;
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.8rem,3.5vw,1.1rem);
+    color:#fff;
+    text-shadow:0 0 24px rgba(167,139,250,0.7), 0 2px 4px rgba(0,0,0,0.5);
+    line-height:1.7; position:relative; z-index:1;
   }
-  @keyframes logoPulse {
-    0%, 100% { text-shadow: 0 0 10px var(--accent1), 0 0 30px rgba(255,233,77,0.4), 3px 3px 0px #a07800; }
-    50% { text-shadow: 0 0 20px var(--accent1), 0 0 60px rgba(255,233,77,0.6), 3px 3px 0px #a07800; }
-  }
-
   .subtitle {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(0.45rem, 1.5vw, 0.6rem);
-    color: var(--accent2);
-    text-shadow: 0 0 8px var(--accent2);
-    margin-top: -8px;
-    letter-spacing: 0.05em;
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:clamp(0.88rem,2.5vw,1.05rem);
+    color:var(--gold-light); font-weight:600;
+    letter-spacing:0.12em; margin-top:4px;
+    position:relative; z-index:1;
+  }
+  .header-divider {
+    width:100px; height:1px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    margin:10px auto 0; opacity:0.6;
+    position:relative; z-index:1;
   }
 
-  .hero-emoji {
-    font-size: 4rem;
-    animation: heroFloat 3s ease-in-out infinite;
-    filter: drop-shadow(0 0 16px var(--accent1));
-  }
-  @keyframes heroFloat {
-    0%, 100% { transform: translateY(0) scale(1); }
-    50% { transform: translateY(-10px) scale(1.05); }
-  }
-
+  /* Instructions — cream panel exactly like v9 .panel */
   .instructions {
-    background: var(--panel);
-    border: 2px solid var(--border);
-    border-radius: 16px;
-    padding: 18px 22px;
-    font-size: clamp(0.85rem, 2.5vw, 1rem);
-    line-height: 1.8;
-    color: var(--soft);
-    text-align: left;
-    width: 100%;
-    box-shadow: 0 0 24px rgba(58,47,255,0.3), inset 0 0 20px rgba(58,47,255,0.05);
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid var(--border-gold);
+    box-shadow: 0 4px 24px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.8);
+    padding: 20px 22px;
+    font-size:clamp(0.9rem,2.5vw,1rem);
+    line-height:1.85; width:100%;
+    color: var(--text-dark);
   }
-  .instructions .en { color: var(--accent3); font-weight: 900; }
-  .instructions .jp { color: var(--soft); font-size: 0.88em; }
+  .instructions .en {
+    font-family:'Fredoka',sans-serif;
+    font-size:1.05rem; font-weight:700;
+    color: var(--text-dark);
+  }
+  .instructions .jp {
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:0.9rem; color:var(--brown); font-weight:500;
+  }
 
+  /* Start button — like v9 gb-purple */
   .btn-start {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(0.65rem, 2vw, 0.85rem);
-    background: linear-gradient(135deg, var(--accent2), var(--border));
-    color: white;
-    border: none;
-    border-radius: 12px;
-    padding: 16px 36px;
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.6rem,1.8vw,0.75rem);
+    background: linear-gradient(135deg,#ede0f8,#d8c8f0);
+    color: var(--text-dark);
+    border: 2px solid var(--purple);
+    border-radius: 14px; padding: 16px 38px;
     cursor: pointer;
-    box-shadow: 0 4px 0px #1a007a, 0 0 24px rgba(255,77,206,0.4);
+    box-shadow: 0 4px 0 #6840a0;
     transition: transform 0.1s, box-shadow 0.1s;
-    animation: btnPulse 2s ease-in-out infinite;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
   }
-  .btn-start:hover  { transform: translateY(-2px); box-shadow: 0 6px 0px #1a007a, 0 0 32px rgba(255,77,206,0.6); }
-  .btn-start:active { transform: translateY(2px); box-shadow: 0 2px 0px #1a007a; }
-  @keyframes btnPulse {
-    0%, 100% { box-shadow: 0 4px 0px #1a007a, 0 0 24px rgba(255,77,206,0.4); }
-    50%       { box-shadow: 0 4px 0px #1a007a, 0 0 40px rgba(255,77,206,0.7); }
-  }
+  .btn-start:hover  { transform:translateY(-2px); box-shadow:0 6px 0 #6840a0; }
+  .btn-start:active { transform:translateY(3px); box-shadow:0 1px 0 #6840a0; }
 
-  /* ===== GAME SCREEN ===== */
+  /* ════════════ GAME SCREEN ════════════ */
   #screen-game {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
+    display:none; flex-direction:column;
+    align-items:center; gap:14px; width:100%;
   }
 
+  /* Top bar — dark like v9 header/tabs */
   .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
+    display:flex; justify-content:space-between;
+    align-items:center; width:100%;
     padding: 10px 16px;
-    background: var(--panel);
-    border: 2px solid var(--border);
-    border-radius: 14px;
-    box-shadow: 0 0 16px rgba(58,47,255,0.2);
+    background: linear-gradient(160deg, #2a1845 0%, #1e1235 100%);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
   }
-
   .score-display {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(0.5rem, 1.5vw, 0.7rem);
-    color: var(--accent1);
-    text-shadow: 0 0 8px var(--accent1);
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.5rem,1.5vw,0.65rem);
+    color:var(--gold-light);
+    text-shadow:0 0 8px rgba(240,208,96,0.5);
   }
-  .score-display span { color: white; }
+  .score-display span { color:#fff; }
 
-  .timer-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .timer-label { font-family: 'Press Start 2P', monospace; font-size: 0.45rem; color: var(--soft); }
+  .timer-wrap { display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .timer-label {
+    font-family:'Press Start 2P',monospace;
+    font-size:0.42rem; color:var(--text-muted); letter-spacing:0.08em;
+  }
   .timer-bar-bg {
-    width: 120px; height: 12px;
-    background: #1a1a3a; border-radius: 6px;
-    overflow: hidden; border: 1px solid var(--border);
+    width:110px; height:11px;
+    background:rgba(0,0,0,0.3); border-radius:6px;
+    overflow:hidden; border:1px solid rgba(167,139,250,0.2);
   }
   .timer-bar {
-    height: 100%; border-radius: 6px;
-    background: linear-gradient(90deg, var(--accent3), var(--accent4));
-    transition: width 0.1s linear, background 0.5s;
-    width: 100%;
+    height:100%; border-radius:6px;
+    background:linear-gradient(90deg,var(--purple-light),var(--gold-light));
+    transition:width 0.1s linear, background 0.5s; width:100%;
   }
-  .timer-bar.low { background: linear-gradient(90deg, #ff4d6e, #ff9a4d); }
+  .timer-bar.low { background:linear-gradient(90deg,var(--mauve),var(--red)); }
   .timer-num {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(0.6rem, 1.5vw, 0.75rem);
-    color: var(--accent3);
-    text-shadow: 0 0 8px var(--accent3);
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.55rem,1.4vw,0.68rem);
+    color:var(--purple-light);
+    text-shadow:0 0 8px rgba(200,160,224,0.5);
   }
-  .timer-num.low { color: var(--wrong); text-shadow: 0 0 8px var(--wrong); }
-  .lives { font-size: 1.2rem; letter-spacing: 2px; }
+  .timer-num.low { color:var(--mauve); }
+  .lives { font-size:1.1rem; letter-spacing:2px; }
 
-  /* Question card */
+  /* Question card — cream like v9 quest card body */
   .question-card {
-    background: var(--panel);
-    border: 2px solid var(--border);
-    border-radius: 20px;
-    padding: 28px 24px;
-    width: 100%;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 32px rgba(58,47,255,0.25), inset 0 0 30px rgba(58,47,255,0.05);
-    min-height: 140px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    background: var(--cream);
+    border: 1px solid var(--border-gold);
+    border-radius: 22px;
+    padding: 26px 22px;
+    width:100%; text-align:center;
+    position:relative; overflow:hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.9);
+    min-height:160px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:10px;
+    color: var(--text-dark);
   }
   .question-card::before {
-    content: '';
-    position: absolute; inset: 0;
-    background: linear-gradient(135deg, rgba(77,255,184,0.03), rgba(77,166,255,0.03));
-    pointer-events: none;
+    content:''; position:absolute; inset:0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+    pointer-events:none; opacity:0.4;
   }
 
+  /* Category badges — like v9 quest-card-badge */
   .category-badge {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.45rem;
-    padding: 4px 10px;
-    border-radius: 20px;
-    letter-spacing: 0.05em;
+    font-family:'Fredoka',sans-serif;
+    font-size:0.72rem; font-weight:700;
+    padding:3px 12px; border-radius:20px;
+    letter-spacing:0.08em; text-transform:uppercase;
+    background:rgba(245,158,11,0.18);
+    border:1px solid rgba(245,158,11,0.4);
+    color:var(--brown);
   }
-  .cat-vocab  { background: rgba(255,233,77,0.15); color: var(--accent1); border: 1px solid rgba(255,233,77,0.3); }
-  .cat-phrase { background: rgba(255,77,206,0.15); color: var(--accent2); border: 1px solid rgba(255,77,206,0.3); }
-  .cat-place  { background: rgba(77,166,255,0.15); color: var(--accent4); border: 1px solid rgba(77,166,255,0.3); }
+  .cat-place {
+    background:rgba(74,56,112,0.1);
+    border-color:rgba(74,56,112,0.3);
+    color:var(--purple-dark);
+  }
+  .cat-phrase {
+    background:rgba(200,48,48,0.08);
+    border-color:rgba(200,48,48,0.3);
+    color:var(--red);
+  }
 
-  .jp-hint { font-size: clamp(1rem, 3vw, 1.25rem); color: var(--soft); font-weight: 700; }
+  /* JP hint — like v9 quest-card-jp style */
+  .jp-hint {
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:clamp(1.05rem,3.2vw,1.3rem);
+    font-weight:700; color:var(--brown);
+    line-height:1.4;
+    padding: 8px 14px;
+    background: rgba(245,158,11,0.08);
+    border-radius: 12px;
+    border-left: 2px solid rgba(245,158,11,0.3);
+    width:100%; text-align:center;
+  }
 
   .question-text {
-    font-size: clamp(1.4rem, 5vw, 2rem);
-    font-weight: 900; color: white;
-    text-shadow: 0 0 20px rgba(255,255,255,0.3);
-    line-height: 1.3;
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(1.2rem,4.5vw,1.6rem);
+    font-weight:600; color:var(--text-soft);
+    line-height:1.3;
   }
 
   /* Progress dots */
-  .progress-dots { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+  .progress-dots { display:flex; gap:7px; justify-content:center; flex-wrap:wrap; }
   .dot {
-    width: 10px; height: 10px; border-radius: 50%;
-    background: #2a2a4a; border: 1px solid var(--border);
-    transition: background 0.3s;
+    width:11px; height:11px; border-radius:50%;
+    background:rgba(42,24,69,0.15);
+    border:1px solid rgba(167,139,250,0.3);
+    transition:background 0.3s;
   }
-  .dot.done      { background: var(--accent3); box-shadow: 0 0 6px var(--accent3); }
-  .dot.current   { background: var(--accent1); box-shadow: 0 0 6px var(--accent1); animation: dotPulse 0.8s ease-in-out infinite; }
-  .dot.wrong-dot { background: var(--wrong); box-shadow: 0 0 6px var(--wrong); }
-  @keyframes dotPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+  .dot.done      { background:var(--green); box-shadow:0 0 6px var(--green); }
+  .dot.current   { background:var(--gold);  box-shadow:0 0 8px var(--gold); animation:dotPulse 0.8s ease-in-out infinite; }
+  .dot.wrong-dot { background:var(--mauve); box-shadow:0 0 6px var(--mauve); }
+  @keyframes dotPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.35)} }
 
-  /* Reveal */
+  /* Reveal elements — on cream card */
   .reveal-countdown {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(0.45rem, 1.3vw, 0.58rem);
-    color: var(--accent1);
-    opacity: 0.85;
-    min-height: 1.2em;
-    text-shadow: 0 0 8px var(--accent1);
-    animation: countdownPulse 0.5s ease-in-out infinite;
+    font-family:'Fredoka',sans-serif;
+    font-size:0.92rem; font-weight:600;
+    color:var(--tan); min-height:1.4em;
+    animation:countdownPulse 0.5s ease-in-out infinite;
   }
-  @keyframes countdownPulse { 0%, 100% { opacity: 0.7; } 50% { opacity: 1; } }
+  @keyframes countdownPulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
 
   .answer-reveal {
-    font-family: 'Nunito', sans-serif;
-    font-size: clamp(1.3rem, 4vw, 1.8rem);
-    font-weight: 900;
-    color: var(--accent1);
-    text-shadow: 0 0 16px rgba(255,233,77,0.6);
-    background: rgba(255,233,77,0.08);
-    border: 2px dashed rgba(255,233,77,0.35);
-    border-radius: 10px;
-    padding: 8px 24px;
-    letter-spacing: 0.05em;
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(1.2rem,3.8vw,1.6rem); font-weight:700;
+    color:var(--purple-dark);
+    background:rgba(245,158,11,0.1);
+    border:1.5px dashed rgba(245,158,11,0.45);
+    border-radius:12px; padding:8px 22px;
   }
   .keep-typing {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(0.42rem, 1.2vw, 0.55rem);
-    color: var(--accent2);
-    text-shadow: 0 0 8px var(--accent2);
-    letter-spacing: 0.04em;
-    animation: nudgePulse 1.2s ease-in-out infinite;
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:0.9rem; font-weight:700;
+    color:var(--text-soft);
+    animation:nudgePulse 1.2s ease-in-out infinite;
   }
-  @keyframes nudgePulse {
-    0%, 100% { opacity: 0.7; transform: scale(1); }
-    50% { opacity: 1; transform: scale(1.04); }
-  }
-  .keep-typing.hidden { display: none; }
-  .answer-reveal.hidden { display: none; }
-  .answer-reveal.visible {
-    display: block;
-    animation: revealPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275);
-  }
-  @keyframes revealPop {
-    0% { transform: scale(0.7); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-  }
+  @keyframes nudgePulse { 0%,100%{opacity:0.7;transform:scale(1)} 50%{opacity:1;transform:scale(1.03)} }
+  .keep-typing.hidden  { display:none; }
+  .answer-reveal.hidden { display:none; }
+  .answer-reveal.visible { display:block; animation:revealPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+  @keyframes revealPop { 0%{transform:scale(0.7);opacity:0} 100%{transform:scale(1);opacity:1} }
 
-  /* Input area */
-  .input-area { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-
+  /* Input — cream background, dark text, like v9 panel inputs */
+  .input-area { width:100%; display:flex; flex-direction:column; align-items:center; gap:12px; }
   .type-input {
-    width: 100%;
-    padding: 16px 20px;
-    font-family: 'Nunito', sans-serif;
-    /* min 16px prevents iOS auto-zoom on focus */
-    font-size: max(16px, clamp(1.1rem, 3.5vw, 1.4rem));
-    font-weight: 900;
-    background: var(--panel);
-    color: white;
-    border: 2px solid var(--border);
-    border-radius: 14px;
-    outline: none;
-    text-align: center;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    caret-color: var(--accent1);
-    -webkit-appearance: none;
+    width:100%; padding:16px 20px;
+    font-family:'Fredoka',sans-serif;
+    font-size:max(16px,clamp(1.1rem,3.5vw,1.4rem));
+    font-weight:600;
+    background: var(--cream);
+    color: var(--text-dark);
+    border: 2px solid var(--border-gold);
+    border-radius:16px; outline:none;
+    text-align:center;
+    transition:border-color 0.2s, box-shadow 0.2s;
+    caret-color:var(--purple);
+    -webkit-appearance:none;
+    box-shadow:0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
   }
-  .type-input::placeholder { color: var(--soft); opacity: 0.5; }
-  .type-input:focus { border-color: var(--accent1); box-shadow: 0 0 16px rgba(255,233,77,0.3); }
-  .type-input.correct-flash { border-color: var(--correct); box-shadow: 0 0 24px rgba(77,255,184,0.5); animation: flashCorrect 0.4s ease; }
-  .type-input.wrong-flash   { border-color: var(--wrong); box-shadow: 0 0 24px rgba(255,77,110,0.5); animation: flashWrong 0.3s ease; }
-  @keyframes flashCorrect { 0% { background: rgba(77,255,184,0.2); } 100% { background: var(--panel); } }
-  @keyframes flashWrong { 0%, 50% { transform: translateX(-6px); } 25%, 75% { transform: translateX(6px); } 100% { transform: translateX(0); } }
+  .type-input::placeholder { color:var(--tan); opacity:0.7; }
+  .type-input:focus {
+    border-color:var(--purple);
+    box-shadow:0 0 20px rgba(144,96,192,0.25), 0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .type-input.correct-flash { border-color:var(--green); box-shadow:0 0 24px rgba(74,144,64,0.35); animation:flashCorrect 0.4s ease; }
+  .type-input.wrong-flash   { border-color:var(--mauve);  box-shadow:0 0 24px rgba(192,120,136,0.35); animation:flashWrong 0.3s ease; }
+  @keyframes flashCorrect { 0%{background:rgba(74,144,64,0.1)} 100%{background:var(--cream)} }
+  @keyframes flashWrong { 0%,50%{transform:translateX(-6px)} 25%,75%{transform:translateX(6px)} 100%{transform:translateX(0)} }
 
   .feedback {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(0.5rem, 1.5vw, 0.65rem);
-    min-height: 1.4em;
-    transition: opacity 0.3s;
-    text-align: center;
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(0.92rem,2vw,1.05rem); font-weight:700;
+    min-height:1.5em; transition:opacity 0.3s; text-align:center;
+    color: var(--text-dark);
   }
-  .feedback.ok  { color: var(--correct); text-shadow: 0 0 10px var(--correct); }
-  .feedback.bad { color: var(--wrong); text-shadow: 0 0 10px var(--wrong); }
+  .feedback.ok  { color:var(--green); }
+  .feedback.bad { color:var(--mauve); }
 
   /* Particles */
   .particle {
-    position: fixed; pointer-events: none; z-index: 999; font-size: 1.4rem;
-    animation: particleFly 0.8s ease-out forwards;
+    position:fixed; pointer-events:none; z-index:999; font-size:1.3rem;
+    animation:particleFly 0.8s ease-out forwards;
   }
-  @keyframes particleFly {
-    0% { opacity: 1; transform: translate(0,0) scale(1); }
-    100% { opacity: 0; transform: translate(var(--tx),var(--ty)) scale(0.3); }
+  @keyframes particleFly { 0%{opacity:1;transform:translate(0,0) scale(1)} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0.3)} }
+
+  /* ════════════ RESULT SCREEN ════════════ */
+  #screen-result {
+    display:none; flex-direction:column;
+    align-items:center; gap:20px; text-align:center;
   }
 
-  /* ===== RESULT SCREEN ===== */
-  #screen-result {
-    display: none; flex-direction: column;
-    align-items: center; gap: 20px; text-align: center;
+  .result-emblem {
+    font-size:4rem; animation:emblemFloat 2.5s ease-in-out infinite;
+    filter:drop-shadow(0 0 20px var(--gold));
   }
 
   .result-title {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(0.9rem, 3vw, 1.2rem);
-    line-height: 1.8; white-space: pre-line;
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.75rem,2.5vw,1rem);
+    line-height:1.9; white-space:pre-line;
   }
-  .result-title.great { color: var(--accent1); text-shadow: 0 0 20px var(--accent1); }
-  .result-title.good  { color: var(--accent3); text-shadow: 0 0 20px var(--accent3); }
-  .result-title.try   { color: var(--accent4); text-shadow: 0 0 20px var(--accent4); }
+  .result-title.great { color:var(--gold-light); text-shadow:0 0 20px rgba(240,208,96,0.6); }
+  .result-title.good  { color:var(--purple-light); text-shadow:0 0 20px rgba(200,160,224,0.6); }
+  .result-title.try   { color:var(--tan); }
 
-  .result-emoji { font-size: 4rem; animation: heroFloat 2s ease-in-out infinite; }
-
+  /* Result score box — cream panel like v9 */
   .result-score-box {
-    background: var(--panel); border: 2px solid var(--border);
-    border-radius: 16px; padding: 20px 32px; width: 100%;
-    box-shadow: 0 0 24px rgba(58,47,255,0.3);
+    background: var(--card-bg);
+    border: 1px solid var(--border-gold);
+    border-radius: 20px; padding:22px 32px; width:100%;
+    box-shadow: 0 4px 24px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.8);
+    color: var(--text-dark);
   }
   .big-score {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(1.5rem, 5vw, 2.2rem);
-    color: var(--accent1); text-shadow: 0 0 20px var(--accent1);
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(1.4rem,5vw,2rem);
+    color:var(--purple-dark);
   }
-  .score-label    { font-size: 0.9rem; color: var(--soft); margin-top: 4px; }
-  .score-label-jp { font-size: 0.8rem; color: var(--soft); opacity: 0.7; }
-
-  .stars-row { display: flex; gap: 8px; justify-content: center; margin: 4px 0; }
-  .star-icon { font-size: 2rem; filter: grayscale(1) opacity(0.3); transition: filter 0.3s; }
-  .star-icon.lit {
-    filter: grayscale(0) drop-shadow(0 0 8px var(--accent1));
-    animation: starPop 0.4s ease backwards;
+  .score-label {
+    font-family:'Fredoka',sans-serif;
+    font-size:1rem; font-weight:600;
+    color:var(--text-soft); margin-top:4px;
   }
-  @keyframes starPop { 0% { transform: scale(0); } 70% { transform: scale(1.3); } 100% { transform: scale(1); } }
+  .score-label-jp {
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:0.9rem; color:var(--brown); margin-top:2px;
+  }
 
+  .stars-row { display:flex; gap:10px; justify-content:center; margin:8px 0; }
+  .star-icon { font-size:2.2rem; filter:grayscale(1) opacity(0.25); transition:filter 0.3s; }
+  .star-icon.lit { filter:grayscale(0) drop-shadow(0 0 10px var(--gold)); animation:starPop 0.4s ease backwards; }
+  @keyframes starPop { 0%{transform:scale(0)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
+
+  /* Mistakes — cream panel */
   .mistakes-list {
-    background: var(--panel);
-    border: 2px solid rgba(255,77,110,0.3);
-    border-radius: 14px; padding: 14px 18px; width: 100%; text-align: left;
-    font-size: clamp(0.75rem, 2vw, 0.9rem);
+    background: var(--card-bg);
+    border: 1px solid rgba(200,48,48,0.25);
+    border-radius: 16px; padding:16px 18px;
+    width:100%; text-align:left;
+    font-size:clamp(0.85rem,2vw,0.95rem);
+    box-shadow: 0 4px 16px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.8);
+    color: var(--text-dark);
   }
   .mistakes-list h3 {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 0.55rem; color: var(--wrong);
-    margin-bottom: 10px; text-align: center;
+    font-family:'Fredoka',sans-serif;
+    font-size:1rem; font-weight:700;
+    color:var(--brown); margin-bottom:12px; text-align:center;
   }
   .mistake-item {
-    display: flex; justify-content: space-between;
-    align-items: center; padding: 5px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05); gap: 12px;
+    display:flex; justify-content:space-between;
+    align-items:center; padding:6px 0;
+    border-bottom:1px dashed rgba(92,40,16,0.15); gap:12px;
   }
-  .mistake-item:last-child { border-bottom: none; }
-  .mistake-wrong   { color: var(--wrong); font-weight: 900; flex: 1; }
-  .mistake-arrow   { color: var(--soft); }
-  .mistake-correct { color: var(--correct); font-weight: 900; flex: 1; text-align: right; }
+  .mistake-item:last-child { border-bottom:none; }
+  .mistake-wrong   { color:var(--mauve); font-weight:700; flex:1; }
+  .mistake-arrow   { color:var(--tan); }
+  .mistake-correct { color:var(--green); font-weight:700; flex:1; text-align:right; }
 
+  /* Play again — like v9 gb-purple button */
   .btn-play-again {
-    font-family: 'Press Start 2P', monospace;
-    font-size: clamp(0.55rem, 1.5vw, 0.7rem);
-    background: linear-gradient(135deg, var(--accent3), var(--accent4));
-    color: var(--bg); border: none; border-radius: 12px;
-    padding: 14px 30px; cursor: pointer;
-    box-shadow: 0 4px 0px #007a4d, 0 0 20px rgba(77,255,184,0.4);
-    transition: transform 0.1s; letter-spacing: 0.03em;
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.5rem,1.4vw,0.65rem);
+    background: linear-gradient(135deg,#ede0f8,#d8c8f0);
+    color:var(--text-dark);
+    border:2px solid var(--purple);
+    border-radius:14px; padding:14px 30px;
+    cursor:pointer;
+    box-shadow:0 4px 0 #6840a0;
+    transition:transform 0.1s; letter-spacing:0.04em;
   }
-  .btn-play-again:hover  { transform: translateY(-2px); }
-  .btn-play-again:active { transform: translateY(2px); }
+  .btn-play-again:hover  { transform:translateY(-2px); }
+  .btn-play-again:active { transform:translateY(3px); box-shadow:0 1px 0 #6840a0; }
 
-  .hidden { display: none !important; }
+  .btn-hub {
+    font-family:'Fredoka',sans-serif;
+    font-size:0.9rem; font-weight:600;
+    color:rgba(200,160,224,0.75);
+    background:transparent;
+    border:1px solid rgba(167,139,250,0.25);
+    border-radius:50px; padding:8px 22px;
+    cursor:pointer; text-decoration:none;
+    transition:color 0.2s, border-color 0.2s;
+    display:inline-block;
+  }
+  .btn-hub:hover { color:var(--gold-light); border-color:rgba(245,158,11,0.4); }
 
-  </style>
+  .hidden { display:none !important; }
+</style>
 </head>
 <body>
 
-<div class="stars" id="stars"></div>
+<div class="starfield" id="starfield"></div>
 
 <div class="container">
 
-  <!-- TITLE -->
+  <!-- ════ TITLE ════ -->
   <div id="screen-title">
-    <div class="hero-emoji">⌨️</div>
-    <div class="logo-wrap">
-      <div class="logo">HERO'S PROOF</div>
-      <div class="subtitle">✦ TYPING QUEST ✦</div>
-    </div>
+    <a href="https://herosproof.github.io" class="title-header" style="text-decoration:none;display:block;cursor:pointer;">
+      <img src="logo.png" alt="Hero's Proof" class="logo-img"
+           onload="document.getElementById('tq-fallback').style.display='none';"
+           onerror="this.style.display='none';">
+      <div id="tq-fallback">
+        <span class="title-emblem">⌨️</span>
+        <div class="logo">HERO'S PROOF</div>
+      </div>
+      <div class="subtitle">✦ Typing Quest · タイピングクエスト ✦</div>
+      <div class="header-divider"></div>
+    </a>
 
     <div class="instructions">
       <p class="en">👀 Look at the Japanese hint</p>
@@ -474,12 +506,13 @@
     </div>
 
     <button class="btn-start" onclick="startGame()">▶ START / スタート</button>
+    <a href="https://herosproof.github.io" class="btn-hub">🏠 Home / ホーム</a>
   </div>
 
-  <!-- GAME -->
+  <!-- ════ GAME ════ -->
   <div id="screen-game">
     <div class="top-bar">
-      <div class="score-display">⭐ <span id="score">0</span></div>
+      <div class="score-display">💎 <span id="score">0</span></div>
       <div class="timer-wrap">
         <div class="timer-label">TIME</div>
         <div class="timer-bar-bg"><div class="timer-bar" id="timer-bar"></div></div>
@@ -491,12 +524,12 @@
     <div class="progress-dots" id="progress-dots"></div>
 
     <div class="question-card">
-      <div id="category-badge" class="category-badge cat-vocab">VOCABULARY</div>
-      <div class="jp-hint" id="jp-hint">まほう</div>
+      <div id="category-badge" class="category-badge cat-vocab">📚 VOCABULARY</div>
+      <div class="jp-hint" id="jp-hint"></div>
       <div class="question-text" id="question-text">Type in English!</div>
       <div class="reveal-countdown" id="reveal-countdown"></div>
       <div class="answer-reveal hidden" id="answer-reveal"></div>
-      <div class="keep-typing hidden" id="keep-typing">⌨️ Keep typing! / まだタイプできるよ！🌟</div>
+      <div class="keep-typing hidden" id="keep-typing">⌨️ Keep typing! / まだタイプできるよ！✨</div>
     </div>
 
     <div class="input-area">
@@ -512,9 +545,9 @@
     </div>
   </div>
 
-  <!-- RESULT -->
+  <!-- ════ RESULT ════ -->
   <div id="screen-result">
-    <div class="result-emoji" id="result-emoji">🏆</div>
+    <div class="result-emblem" id="result-emoji">🏆</div>
     <div class="result-title" id="result-title">HERO'S PROOF!</div>
 
     <div class="result-score-box">
@@ -533,14 +566,15 @@
       <div id="mistakes-body"></div>
     </div>
 
-    <button class="btn-play-again" onclick="goTitle()">🔄 PLAY AGAIN / もう一かい</button>
+    <button class="btn-play-again" onclick="goTitle()">🔄 PLAY AGAIN / もういちど</button>
+    <a href="https://herosproof.github.io" class="btn-hub">🏠 Home / ホーム</a>
   </div>
 
-</div>
+</div><!-- /container -->
 
 <script>
 const questions = [
-  // Song vocabulary
+  // ── Hero's Proof world vocabulary ──
   { type:'vocab', hint:'✨ まほう',              answer:'magic',           accept:['magic'] },
   { type:'vocab', hint:'💪 ゆうき',              answer:'courage',         accept:['courage'] },
   { type:'vocab', hint:'🗺️ ぼうけん',            answer:'adventure',       accept:['adventure'] },
@@ -551,83 +585,91 @@ const questions = [
   { type:'vocab', hint:'🏰 しろ',                answer:'castle',          accept:['castle'] },
   { type:'vocab', hint:'🌲 もり',                answer:'forest',          accept:['forest'] },
   { type:'vocab', hint:'🏔️ やま',                answer:'mountain',        accept:['mountain'] },
-  // Animals
+  { type:'vocab', hint:'🐲 ドラゴン',             answer:'dragon',          accept:['dragon'] },
+  { type:'vocab', hint:'👑 おうさま',             answer:'king',            accept:['king'] },
+  // ── Animals ──
   { type:'vocab', hint:'🐱 ねこ',                answer:'cat',             accept:['cat'] },
   { type:'vocab', hint:'🐶 いぬ',                answer:'dog',             accept:['dog'] },
   { type:'vocab', hint:'🐟 さかな',              answer:'fish',            accept:['fish'] },
   { type:'vocab', hint:'🐦 とり',                answer:'bird',            accept:['bird'] },
   { type:'vocab', hint:'🐰 うさぎ',              answer:'rabbit',          accept:['rabbit'] },
-  // Food & nature
+  { type:'vocab', hint:'🐵 さる',                answer:'monkey',          accept:['monkey'] },
+  // ── Food & nature ──
   { type:'vocab', hint:'🍎 りんご',              answer:'apple',           accept:['apple'] },
   { type:'vocab', hint:'🍌 バナナ',              answer:'banana',          accept:['banana'] },
+  { type:'vocab', hint:'🍕 ピザ',                answer:'pizza',           accept:['pizza'] },
+  { type:'vocab', hint:'🍰 ケーキ',              answer:'cake',            accept:['cake'] },
+  { type:'vocab', hint:'🍦 アイスクリーム',       answer:'ice cream',       accept:['ice cream'] },
+  { type:'vocab', hint:'🥦 ブロッコリー',         answer:'broccoli',        accept:['broccoli'] },
+  { type:'vocab', hint:'🍄 きのこ',              answer:'mushroom',        accept:['mushroom'] },
+  { type:'vocab', hint:'🥛 ぎゅうにゅう',         answer:'milk',            accept:['milk'] },
   { type:'vocab', hint:'💧 みず',                answer:'water',           accept:['water'] },
+  // ── Nature / Sky / Seasons ──
   { type:'vocab', hint:'☀️ たいよう',             answer:'sun',             accept:['sun'] },
   { type:'vocab', hint:'🌙 つき',                answer:'moon',            accept:['moon'] },
   { type:'vocab', hint:'🌸 はな',                answer:'flower',          accept:['flower'] },
   { type:'vocab', hint:'🌳 き',                  answer:'tree',            accept:['tree'] },
   { type:'vocab', hint:'🌊 うみ',                answer:'sea',             accept:['sea','ocean'] },
   { type:'vocab', hint:'🌤️ そら',                answer:'sky',             accept:['sky'] },
-  // School / everyday
+  { type:'vocab', hint:'🌧️ あめ',                answer:'rain',            accept:['rain'] },
+  { type:'vocab', hint:'❄️ ゆき',                answer:'snow',            accept:['snow'] },
+  { type:'vocab', hint:'🌻 なつ',                answer:'summer',          accept:['summer'] },
+  { type:'vocab', hint:'⛄ ふゆ',                answer:'winter',          accept:['winter'] },
+  { type:'vocab', hint:'🌸 はる',                answer:'spring',          accept:['spring'] },
+  { type:'vocab', hint:'🍂 あき',                answer:'autumn',          accept:['autumn','fall'] },
+  // ── School / everyday ──
   { type:'vocab', hint:'📚 ほん',                answer:'book',            accept:['book'] },
   { type:'vocab', hint:'🏫 がっこう',             answer:'school',          accept:['school'] },
   { type:'vocab', hint:'👩‍🏫 せんせい',             answer:'teacher',         accept:['teacher'] },
   { type:'vocab', hint:'🍱 たべもの',             answer:'food',            accept:['food'] },
   { type:'vocab', hint:'⚽ スポーツ',             answer:'sports',          accept:['sports','sport'] },
   { type:'vocab', hint:'🎵 おんがく',             answer:'music',           accept:['music'] },
-  // Colors
+  { type:'vocab', hint:'🎨 びじゅつ',             answer:'art',             accept:['art'] },
+  { type:'vocab', hint:'➕ さんすう',             answer:'math',            accept:['math'] },
+  { type:'vocab', hint:'🔬 りか',                answer:'science',         accept:['science'] },
+  // ── Colors ──
   { type:'vocab', hint:'🔴 あか',                answer:'red',             accept:['red'] },
   { type:'vocab', hint:'🔵 あお',                answer:'blue',            accept:['blue'] },
   { type:'vocab', hint:'🟢 みどり',              answer:'green',           accept:['green'] },
   { type:'vocab', hint:'🟡 きいろ',              answer:'yellow',          accept:['yellow'] },
-  { type:'vocab', hint:'⚪ しろ（いろ）',         answer:'white',           accept:['white'] },
-  { type:'vocab', hint:'🟠 オレンジ',              answer:'orange',          accept:['orange'] },
-  { type:'vocab', hint:'⚫ くろ',                  answer:'black',           accept:['black'] },
-  { type:'vocab', hint:'🟣 むらさき',              answer:'purple',          accept:['purple'] },
-  // Body parts
+  { type:'vocab', hint:'⚪ しろ',                answer:'white',           accept:['white'] },
+  { type:'vocab', hint:'⚫ くろ',                answer:'black',           accept:['black'] },
+  { type:'vocab', hint:'🟠 オレンジ',             answer:'orange',          accept:['orange'] },
+  { type:'vocab', hint:'🟣 むらさき',             answer:'purple',          accept:['purple'] },
+  { type:'vocab', hint:'🩷 ピンク',              answer:'pink',            accept:['pink'] },
+  // ── Body ──
   { type:'vocab', hint:'👁️ め',                  answer:'eye',             accept:['eye'] },
-  { type:'vocab', hint:'👂 みみ',                 answer:'ear',             accept:['ear'] },
-  { type:'vocab', hint:'🦵 あし',                 answer:'leg',             accept:['leg'] },
-  { type:'vocab', hint:'💪 うで',                 answer:'arm',             accept:['arm'] },
-  { type:'vocab', hint:'✋ て',                   answer:'hand',            accept:['hand'] },
-  // Things
-  { type:'vocab', hint:'🥚 たまご',               answer:'egg',             accept:['egg'] },
-  { type:'vocab', hint:'🚗 くるま',               answer:'car',             accept:['car'] },
-  { type:'vocab', hint:'🎩 ぼうし',               answer:'hat',             accept:['hat'] },
-  { type:'vocab', hint:'🖊️ ペン',                 answer:'pen',             accept:['pen'] },
-  { type:'vocab', hint:'☕ カップ',               answer:'cup',             accept:['cup'] },
-  { type:'vocab', hint:'🛏️ ベッド',               answer:'bed',             accept:['bed'] },
-  { type:'vocab', hint:'📦 はこ',                 answer:'box',             accept:['box'] },
-  { type:'vocab', hint:'🪟 まど',                 answer:'window',          accept:['window'] },
-  { type:'vocab', hint:'🚀 ロケット',              answer:'rocket',          accept:['rocket'] },
-  // Food
-  { type:'vocab', hint:'🎂 ケーキ',               answer:'cake',            accept:['cake'] },
-  { type:'vocab', hint:'🥛 ぎゅうにゅう',          answer:'milk',            accept:['milk'] },
-  // Nature / seasons
-  { type:'vocab', hint:'🌧️ あめ',                 answer:'rain',            accept:['rain'] },
-  { type:'vocab', hint:'❄️ ゆき',                 answer:'snow',            accept:['snow'] },
-  { type:'vocab', hint:'🌻 なつ',                 answer:'summer',          accept:['summer'] },
-  { type:'vocab', hint:'⛄ ふゆ',                 answer:'winter',          accept:['winter'] },
-  // Colors
-  { type:'vocab', hint:'🩷 ピンク',               answer:'pink',            accept:['pink'] },
-  // People / fantasy
-  { type:'vocab', hint:'🤴 おうさま',              answer:'king',            accept:['king'] },
+  { type:'vocab', hint:'👂 みみ',                answer:'ear',             accept:['ear'] },
+  { type:'vocab', hint:'🦵 あし',                answer:'leg',             accept:['leg'] },
+  { type:'vocab', hint:'💪 うで',                answer:'arm',             accept:['arm'] },
+  { type:'vocab', hint:'✋ て',                  answer:'hand',            accept:['hand'] },
+  // ── Things ──
+  { type:'vocab', hint:'🥚 たまご',              answer:'egg',             accept:['egg'] },
+  { type:'vocab', hint:'🚗 くるま',              answer:'car',             accept:['car'] },
+  { type:'vocab', hint:'🎩 ぼうし',              answer:'hat',             accept:['hat'] },
+  { type:'vocab', hint:'📦 はこ',                answer:'box',             accept:['box'] },
+  { type:'vocab', hint:'🪟 まど',                answer:'window',          accept:['window'] },
+  { type:'vocab', hint:'🛏️ ベッド',              answer:'bed',             accept:['bed'] },
+  { type:'vocab', hint:'🚀 ロケット',             answer:'rocket',          accept:['rocket'] },
   { type:'vocab', hint:'👨‍👩‍👧 かぞく',              answer:'family',          accept:['family'] },
-  { type:'vocab', hint:'🐵 さる',                 answer:'monkey',          accept:['monkey'] },
-  { type:'vocab', hint:'🐲 ドラゴン',              answer:'dragon',          accept:['dragon'] },
-  // Phrases (case-sensitive, punctuation required)
-  { type:'phrase', caseSensitive:true, hint:'🌍 どこから きましたか？',  answer:'Where are you from?',  accept:['Where are you from?'] },
-  { type:'phrase', caseSensitive:true, hint:'🙋 あなたはだれ？',         answer:'Who are you?',         accept:['Who are you?'] },
-  { type:'phrase', caseSensitive:true, hint:'❤️ なにが すき？',          answer:'What do you like?',    accept:['What do you like?'] },
-  { type:'phrase', caseSensitive:true, hint:'🎯 なにを しますか？',      answer:'What do you do?',      accept:['What do you do?'] },
-  { type:'phrase', caseSensitive:true, hint:'💭 ゆめはなに？',           answer:'What is your dream?',  accept:['What is your dream?'] },
-  { type:'phrase', caseSensitive:true, hint:'🚀 行こう！',               answer:"Let's go!",            accept:["Let's go!"] },
-  { type:'phrase', caseSensitive:true, hint:'✊ わたしはできる！',        answer:'I can do it!',         accept:['I can do it!'] },
-  { type:'phrase', caseSensitive:true, hint:'🌅 おはようございます！',   answer:'Good morning!',        accept:['Good morning!'] },
-  { type:'phrase', caseSensitive:true, hint:'👋 こんにちは！',           answer:'Hello!',               accept:['Hello!', 'Hi!'] },
-  { type:'phrase', caseSensitive:true, hint:'🙏 ありがとう！',           answer:'Thank you!',           accept:['Thank you!', 'Thanks!'] },
-  { type:'phrase', caseSensitive:true, hint:'💖 すきです！',             answer:'I like it!',           accept:['I like it!'] },
+  // ── Harder vocab (matching Hard Quest Card deck) ──
+  { type:'vocab', hint:'🌟 すばらしい',           answer:'wonderful',       accept:['wonderful'] },
+  { type:'vocab', hint:'🤩 すてき・きれい',        answer:'beautiful',       accept:['beautiful'] },
+  { type:'vocab', hint:'😋 おいしい',             answer:'delicious',       accept:['delicious'] },
+  { type:'vocab', hint:'💪 ゆうかん',             answer:'brave',           accept:['brave'] },
+  { type:'vocab', hint:'🎉 すごい！',             answer:'fantastic',       accept:['fantastic'] },
+  // ── Phrases ──
   { type:'phrase', caseSensitive:true, hint:'😊 げんきですか？',         answer:'How are you?',         accept:['How are you?'] },
-  // Countries (case-sensitive proper nouns)
+  { type:'phrase', caseSensitive:true, hint:'🌅 おはようございます！',   answer:'Good morning!',        accept:['Good morning!'] },
+  { type:'phrase', caseSensitive:true, hint:'👋 こんにちは！',           answer:'Hello!',               accept:['Hello!','Hi!'] },
+  { type:'phrase', caseSensitive:true, hint:'🙏 ありがとう！',           answer:'Thank you!',           accept:['Thank you!','Thanks!'] },
+  { type:'phrase', caseSensitive:true, hint:'❤️ なにが すき？',          answer:'What do you like?',    accept:['What do you like?'] },
+  { type:'phrase', caseSensitive:true, hint:'🌍 どこから きましたか？',  answer:'Where are you from?',  accept:['Where are you from?'] },
+  { type:'phrase', caseSensitive:true, hint:'✊ わたしはできる！',        answer:'I can do it!',         accept:['I can do it!'] },
+  { type:'phrase', caseSensitive:true, hint:'🚀 いこう！',               answer:"Let's go!",            accept:["Let's go!"] },
+  { type:'phrase', caseSensitive:true, hint:'💖 すきです！',             answer:'I like it!',           accept:['I like it!'] },
+  { type:'phrase', caseSensitive:true, hint:'💭 ゆめはなに？',           answer:'What is your dream?',  accept:['What is your dream?'] },
+  // ── Countries ──
   { type:'place', caseSensitive:true, hint:'🇯🇵 にほん',          answer:'Japan',           accept:['Japan'] },
   { type:'place', caseSensitive:true, hint:'🇺🇸 アメリカ',        answer:'America',         accept:['America'] },
   { type:'place', caseSensitive:true, hint:'🇦🇺 オーストラリア',  answer:'Australia',       accept:['Australia'] },
@@ -637,7 +679,7 @@ const questions = [
   { type:'place', caseSensitive:true, hint:'🇫🇷 フランス',        answer:'France',          accept:['France'] },
   { type:'place', caseSensitive:true, hint:'🇮🇹 イタリア',        answer:'Italy',           accept:['Italy'] },
   { type:'place', caseSensitive:true, hint:'🇧🇷 ブラジル',        answer:'Brazil',          accept:['Brazil'] },
-  { type:'place', caseSensitive:true, hint:'🇬🇧 イギリス',        answer:'the U.K.',        accept:['the U.K.', 'the UK'] },
+  { type:'place', caseSensitive:true, hint:'🇬🇧 イギリス',        answer:'the U.K.',        accept:['the U.K.','the UK'] },
   { type:'place', caseSensitive:true, hint:'🇬🇺 グアム',          answer:'Guam',            accept:['Guam'] },
   { type:'place', caseSensitive:true, hint:'🇵🇭 フィリピン',      answer:'the Philippines', accept:['the Philippines'] },
   { type:'place', caseSensitive:true, hint:'🇳🇿 ニュージーランド', answer:'New Zealand',     accept:['New Zealand'] },
@@ -645,10 +687,11 @@ const questions = [
   { type:'place', caseSensitive:true, hint:'🇪🇬 エジプト',        answer:'Egypt',           accept:['Egypt'] },
   { type:'place', caseSensitive:true, hint:'🇬🇭 ガーナ',          answer:'Ghana',           accept:['Ghana'] },
   { type:'place', caseSensitive:true, hint:'🇲🇽 メキシコ',        answer:'Mexico',          accept:['Mexico'] },
-  { type:'place', caseSensitive:true, hint:'🇵🇪 ペルー',          answer:'Peru',            accept:['Peru'] },
-  { type:'place', caseSensitive:true, hint:'🇳🇴 ノルウェー',      answer:'Norway',          accept:['Norway'] },
   { type:'place', caseSensitive:true, hint:'🇩🇪 ドイツ',          answer:'Germany',         accept:['Germany'] },
-  // Japanese prefectures (case-sensitive proper nouns)
+  { type:'place', caseSensitive:true, hint:'🇵🇪 ペルー',          answer:'Peru',            accept:['Peru'] },
+  { type:'place', caseSensitive:true, hint:'🇬🇭 ガーナ',          answer:'Ghana',           accept:['Ghana'] },
+  { type:'place', caseSensitive:true, hint:'🇳🇴 ノルウェー',      answer:'Norway',          accept:['Norway'] },
+  // ── Japanese prefectures ──
   { type:'place', caseSensitive:true, hint:'🗼 とうきょうと',     answer:'Tokyo',           accept:['Tokyo'] },
   { type:'place', caseSensitive:true, hint:'🏯 おおさかふ',       answer:'Osaka',           accept:['Osaka'] },
   { type:'place', caseSensitive:true, hint:'⛩️ きょうとふ',       answer:'Kyoto',           accept:['Kyoto'] },
@@ -670,27 +713,22 @@ let gameQuestions=[], current=0, score=0, lives=MAX_LIVES;
 let timer=TIME_PER_Q, timerInterval=null;
 let mistakes=[], answered=false, hintRevealed=false;
 
-// ===== BACKGROUND =====
+// ── Background ──
 function setupBackground() {
-  const starsEl = document.getElementById('stars');
-  for (let i = 0; i < 80; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const size = Math.random() * 3 + 1;
-    s.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;top:${Math.random()*100}%;--dur:${2+Math.random()*4}s;animation-delay:${Math.random()*4}s;`;
-    starsEl.appendChild(s);
-  }
-  const crystals = ['💎','✨','⭐','🔮','💫','✦'];
-  for (let i = 0; i < 8; i++) {
-    const c = document.createElement('div');
-    c.className = 'crystal';
-    c.textContent = crystals[i % crystals.length];
-    c.style.cssText = `left:${5+Math.random()*90}%;top:${5+Math.random()*90}%;--dur:${4+Math.random()*6}s;animation-delay:${Math.random()*5}s;`;
-    document.body.appendChild(c);
+  const sf = document.getElementById('starfield');
+  const glyphs = ['✦','✧','⋆','✴','★','✸','·','✦','✧'];
+  const colors = ['#f0d060','#c9a030','#d9c9a8','#f0d060','#c8a0e0','#f8f0c0'];
+  for(let i=0;i<70;i++){
+    const s=document.createElement('span');
+    const sz=(Math.random()*1.2+0.5).toFixed(2);
+    const glyph=glyphs[Math.floor(Math.random()*glyphs.length)];
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    s.textContent=glyph;
+    s.style.cssText=`top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;--delay:-${Math.random()*7}s;--sz:${sz}rem;--col:${col};`;
+    sf.appendChild(s);
   }
 }
 
-// ===== HELPERS =====
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length-1; i > 0; i--) {
@@ -705,10 +743,9 @@ function show(id) {
     document.getElementById(s).style.display = 'none';
   });
   document.getElementById(id).style.display = 'flex';
-  window.scrollTo(0, 0);
+  window.scrollTo(0,0);
 }
 
-// ===== GAME =====
 function startGame() {
   gameQuestions = shuffle(questions).slice(0, QUESTION_COUNT);
   current=0; score=0; lives=MAX_LIVES; mistakes=[];
@@ -724,7 +761,7 @@ function buildDots() {
   el.innerHTML = '';
   for (let i = 0; i < QUESTION_COUNT; i++) {
     const d = document.createElement('div');
-    d.className = 'dot' + (i === 0 ? ' current' : '');
+    d.className = 'dot' + (i===0 ? ' current' : '');
     d.id = `dot-${i}`;
     el.appendChild(d);
   }
@@ -775,10 +812,8 @@ function startTimer() {
     timer--;
     updateTimerUI();
     const elapsed = TIME_PER_Q - timer;
-
-    if (elapsed >= HINT_REVEAL_AFTER-3 && elapsed < HINT_REVEAL_AFTER && !hintRevealed) {
+    if (elapsed >= HINT_REVEAL_AFTER-3 && elapsed < HINT_REVEAL_AFTER && !hintRevealed)
       document.getElementById('reveal-countdown').textContent = `💡 Answer in ${HINT_REVEAL_AFTER - elapsed}...`;
-    }
     if (elapsed >= HINT_REVEAL_AFTER && !hintRevealed) {
       hintRevealed = true;
       document.getElementById('reveal-countdown').textContent = '';
@@ -840,8 +875,8 @@ function checkAnswer() {
     document.getElementById('score').textContent = score;
     inp.className = 'type-input correct-flash';
     sfxCorrect();
-    showFeedback('✅ Correct! ＋' + pts + 'pts', true);
-    spawnParticles(inp, ['⭐','✨','💎','🎉']);
+    showFeedback('✅ Correct! ＋' + pts + ' pts', true);
+    spawnParticles(inp, ['⭐','✨','💎','✦']);
     updateDot(current, 'done');
     setTimeout(nextQuestion, 900);
   } else {
@@ -867,7 +902,7 @@ function loseLife() {
 
 function updateLives() {
   document.getElementById('lives').textContent =
-    Array.from({length: MAX_LIVES}, (_, i) => i < lives ? '❤️' : '🖤').join('');
+    Array.from({length:MAX_LIVES}, (_,i) => i < lives ? '❤️' : '🖤').join('');
 }
 
 function nextQuestion() {
@@ -901,23 +936,23 @@ function spawnParticles(el, symbols) {
 function endGame() {
   clearInterval(timerInterval);
   show('screen-result');
+  stopTimerWarning();
   const pct = score / (QUESTION_COUNT * 100);
   document.getElementById('final-score').textContent = score;
-  stopTimerWarning();
 
   let stars, emoji, cls, title, sub;
   if (pct >= 0.8) {
     stars=3; emoji='🏆'; cls='great';
     title="HERO'S PROOF!\nかんぺき！";
-    sub="Amazing! You're a real hero! / すごい！ほんものの英語ヒーロー！";
+    sub="Amazing! You're a real hero! / ほんものの英語ヒーロー！";
   } else if (pct >= 0.5) {
     stars=2; emoji='⚔️'; cls='good';
-    title="GOOD JOB!\nよくできました！";
+    title="WELL DONE!\nよくできました！";
     sub="Great effort! Keep going! / がんばったね！もっとれんしゅうしよう！";
   } else {
     stars=1; emoji='💪'; cls='try';
     title="TRY AGAIN!\nもういちど！";
-    sub="Don't give up! You can do it! / あきらめないで！できるよ！";
+    sub="Don't give up! / あきらめないで！できるよ！";
   }
 
   document.getElementById('result-emoji').textContent = emoji;
@@ -955,67 +990,49 @@ function goTitle() {
   show('screen-title');
 }
 
-
-// ===== WEB AUDIO SFX =====
+// ── Audio ──
 let audioCtx = null;
 function getCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   return audioCtx;
 }
-
-function playTone(freq, type, duration, vol=0.3, fadeOut=true) {
+function playTone(freq, type, duration, vol=0.28, fadeOut=true) {
   try {
     const ctx = getCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
     gain.gain.setValueAtTime(vol, ctx.currentTime);
     if (fadeOut) gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + duration);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + duration);
   } catch(e) {}
 }
-
 function sfxCorrect() {
-  playTone(523, 'sine', 0.12, 0.25);
-  setTimeout(() => playTone(659, 'sine', 0.12, 0.25), 80);
-  setTimeout(() => playTone(784, 'sine', 0.2,  0.25), 160);
+  playTone(523,'sine',0.12,0.22);
+  setTimeout(() => playTone(659,'sine',0.12,0.22), 80);
+  setTimeout(() => playTone(784,'sine',0.2,0.22),  160);
 }
-
 function sfxWrong() {
-  playTone(220, 'sawtooth', 0.08, 0.2);
-  setTimeout(() => playTone(180, 'sawtooth', 0.15, 0.2), 80);
+  playTone(220,'sawtooth',0.08,0.18);
+  setTimeout(() => playTone(180,'sawtooth',0.15,0.18), 80);
 }
-
-function sfxType() {
-  playTone(900 + Math.random()*200, 'triangle', 0.07, 0.18);
-}
-
-function sfxTimerWarn() {
-  playTone(880, 'square', 0.06, 0.1);
-}
-
-function sfxFanfare(starCount) {
-  if (starCount === 3) {
-    // Big victory: ascending arpeggio
-    const notes = [523,659,784,1047];
-    notes.forEach((n,i) => setTimeout(() => playTone(n,'sine',0.25,0.3), i*120));
-    setTimeout(() => playTone(1047,'sine',0.5,0.3), notes.length*120);
-  } else if (starCount === 2) {
-    const notes = [440,554,659];
-    notes.forEach((n,i) => setTimeout(() => playTone(n,'sine',0.22,0.28), i*110));
+function sfxType() { playTone(900+Math.random()*200,'triangle',0.07,0.15); }
+function sfxTimerWarn() { playTone(880,'square',0.06,0.1); }
+function sfxFanfare(stars) {
+  if (stars===3) {
+    [523,659,784,1047].forEach((n,i) => setTimeout(() => playTone(n,'sine',0.25,0.28), i*120));
+    setTimeout(() => playTone(1047,'sine',0.5,0.28), 4*120);
+  } else if (stars===2) {
+    [440,554,659].forEach((n,i) => setTimeout(() => playTone(n,'sine',0.22,0.25), i*110));
   } else {
-    playTone(330,'sine',0.15,0.2);
-    setTimeout(() => playTone(294,'sine',0.2,0.2), 150);
+    playTone(330,'sine',0.15,0.18);
+    setTimeout(() => playTone(294,'sine',0.2,0.18), 150);
   }
 }
-
 let timerWarnInterval = null;
-
 function startTimerWarning() {
-  stopTimerWarning();
+  if (timerWarnInterval) return;
   timerWarnInterval = setInterval(sfxTimerWarn, 1000);
 }
 function stopTimerWarning() {
