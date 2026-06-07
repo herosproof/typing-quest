@@ -1,0 +1,1559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Hero's Proof – Typing Quest</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka:wght@400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700;900&family=Kosugi+Maru&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:           #3a2558;
+    --bg2:          #2a1845;
+    --cream:        #f5eedc;
+    --card-bg:      rgba(245,238,220,0.95);
+    --border-gold:  rgba(245,158,11,0.25);
+    --purple:       #9060c0;
+    --purple-light: #c8a0e0;
+    --purple-pale:  #ede0f8;
+    --purple-dark:  #4a3870;
+    --gold:         #c9a030;
+    --gold-light:   #f0d060;
+    --gold-pale:    #f8f0c0;
+    --tan:          #c4a882;
+    --beige:        #d9c9a8;
+    --brown:        #5c2810;
+    --text-dark:    #1e1235;
+    --text-soft:    #3a2558;
+    --text-muted:   rgba(200,160,224,0.75);
+    --red:          #c83030;
+    --red-pale:     #fee2e2;
+    --green:        #4a9040;
+    --green-pale:   #d0e8b0;
+    --mauve:        #c07888;
+    --shadow:       rgba(0,0,0,0.4);
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { height:100%; }
+
+  body {
+    font-family: 'Fredoka', 'Kosugi Maru', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+    min-height: 100dvh;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 16px 12px 48px;
+  }
+
+  /* ── Starfield — exactly matching v9 sugoroku ── */
+  .starfield { position:fixed; inset:0; pointer-events:none; z-index:0; }
+  .starfield span {
+    position: absolute;
+    animation: twinkle var(--d, 3s) ease-in-out infinite var(--delay, 0s);
+    display: flex; align-items: center; justify-content: center;
+    font-size: var(--sz, 1rem);
+    color: var(--col, #fde68a);
+    text-shadow: 0 0 6px var(--col, #fde68a);
+    line-height: 1;
+  }
+  @keyframes twinkle {
+    0%,100%{ opacity:0; transform:scale(.3) rotate(0deg) }
+    50%    { opacity:.9; transform:scale(1) rotate(20deg) }
+  }
+
+  .container {
+    position:relative; z-index:1;
+    width:min(600px,95vw);
+    display:flex; flex-direction:column;
+    align-items:center; gap:0;
+  }
+
+  /* ════════════ TITLE SCREEN ════════════ */
+  #screen-title {
+    display:flex; flex-direction:column;
+    align-items:center; gap:20px; text-align:center;
+  }
+
+  /* Header — dark like sugoroku header */
+  .title-header {
+    width:100%;
+    background: linear-gradient(160deg, #2a1845 0%, #1e1235 60%, #150d28 100%);
+    padding: 28px 20px 20px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 24px rgba(124,58,237,0.35);
+    border-bottom: 1px solid rgba(167,139,250,0.2);
+    border-radius: 0 0 20px 20px;
+    margin-bottom: 4px;
+    overflow: hidden;
+  }
+  .title-header::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(144,96,192,0.22) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .logo-img {
+    max-height: 160px; max-width: 92%;
+    object-fit: contain; display: block;
+    margin: 0 auto 8px;
+    position: relative; z-index: 1;
+    filter: drop-shadow(0 2px 16px rgba(167,139,250,0.5));
+  }
+  .title-emblem {
+    font-size:3rem; display:block;
+    margin-bottom:8px; position:relative; z-index:1;
+    animation:emblemFloat 3s ease-in-out infinite;
+    filter:drop-shadow(0 0 16px rgba(201,160,48,0.5));
+  }
+  @keyframes emblemFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  .logo {
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.8rem,3.5vw,1.1rem);
+    color:#fff;
+    text-shadow:0 0 24px rgba(167,139,250,0.7), 0 2px 4px rgba(0,0,0,0.5);
+    line-height:1.7; position:relative; z-index:1;
+  }
+  .subtitle {
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:clamp(0.88rem,2.5vw,1.05rem);
+    color:var(--gold-light); font-weight:600;
+    letter-spacing:0.12em; margin-top:4px;
+    position:relative; z-index:1;
+  }
+  .header-divider {
+    width:100px; height:1px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+    margin:10px auto 0; opacity:0.6;
+    position:relative; z-index:1;
+  }
+
+  /* Instructions — cream panel exactly like v9 .panel */
+  .instructions {
+    background: var(--card-bg);
+    border-radius: 20px;
+    border: 1px solid var(--border-gold);
+    box-shadow: 0 4px 24px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.8);
+    padding: 20px 22px;
+    font-size:clamp(0.9rem,2.5vw,1rem);
+    line-height:1.85; width:100%;
+    color: var(--text-dark);
+  }
+  .instructions .en {
+    font-family:'Fredoka',sans-serif;
+    font-size:1.05rem; font-weight:700;
+    color: var(--text-dark);
+  }
+  .instructions .jp {
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:0.9rem; color:var(--brown); font-weight:500;
+  }
+
+  /* Start button — like v9 gb-purple */
+  .btn-start {
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.6rem,1.8vw,0.75rem);
+    background: linear-gradient(135deg,#ede0f8,#d8c8f0);
+    color: var(--text-dark);
+    border: 2px solid var(--purple);
+    border-radius: 14px; padding: 16px 38px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #6840a0;
+    transition: transform 0.1s, box-shadow 0.1s;
+    letter-spacing: 0.06em;
+  }
+  .btn-start:hover  { transform:translateY(-2px); box-shadow:0 6px 0 #6840a0; }
+  .btn-start:active { transform:translateY(3px); box-shadow:0 1px 0 #6840a0; }
+
+  /* ════════════ GAME SCREEN ════════════ */
+  #screen-game {
+    display:none; flex-direction:column;
+    align-items:center; gap:14px; width:100%;
+  }
+
+  /* Top bar — dark like v9 header/tabs */
+  .top-bar {
+    display:flex; justify-content:space-between;
+    align-items:center; width:100%;
+    padding: 10px 16px;
+    background: linear-gradient(160deg, #2a1845 0%, #1e1235 100%);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .score-display {
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.5rem,1.5vw,0.65rem);
+    color:var(--gold-light);
+    text-shadow:0 0 8px rgba(240,208,96,0.5);
+  }
+  .score-display span { color:#fff; }
+
+  .timer-wrap { display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .timer-label {
+    font-family:'Press Start 2P',monospace;
+    font-size:0.42rem; color:var(--text-muted); letter-spacing:0.08em;
+  }
+  .timer-bar-bg {
+    width:110px; height:11px;
+    background:rgba(0,0,0,0.3); border-radius:6px;
+    overflow:hidden; border:1px solid rgba(167,139,250,0.2);
+  }
+  .timer-bar {
+    height:100%; border-radius:6px;
+    background:linear-gradient(90deg,var(--purple-light),var(--gold-light));
+    transition:width 0.1s linear, background 0.5s; width:100%;
+  }
+  .timer-bar.low { background:linear-gradient(90deg,var(--mauve),var(--red)); }
+  .timer-num {
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.55rem,1.4vw,0.68rem);
+    color:var(--purple-light);
+    text-shadow:0 0 8px rgba(200,160,224,0.5);
+  }
+  .timer-num.low { color:var(--mauve); }
+  .lives { font-size:1.1rem; letter-spacing:2px; }
+
+  /* Question card — cream like v9 quest card body */
+  .question-card {
+    background: var(--cream);
+    border: 1px solid var(--border-gold);
+    border-radius: 22px;
+    padding: 26px 22px;
+    width:100%; text-align:center;
+    position:relative; overflow:hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.9);
+    min-height:160px;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:10px;
+    color: var(--text-dark);
+  }
+  .question-card::before {
+    content:''; position:absolute; inset:0;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.03'/%3E%3C/svg%3E");
+    pointer-events:none; opacity:0.4;
+  }
+
+  /* Category badges — like v9 quest-card-badge */
+  .category-badge {
+    font-family:'Fredoka',sans-serif;
+    font-size:0.72rem; font-weight:700;
+    padding:3px 12px; border-radius:20px;
+    letter-spacing:0.08em; text-transform:uppercase;
+    background:rgba(245,158,11,0.18);
+    border:1px solid rgba(245,158,11,0.4);
+    color:var(--brown);
+  }
+  .cat-place {
+    background:rgba(74,56,112,0.1);
+    border-color:rgba(74,56,112,0.3);
+    color:var(--purple-dark);
+  }
+  .cat-phrase {
+    background:rgba(200,48,48,0.08);
+    border-color:rgba(200,48,48,0.3);
+    color:var(--red);
+  }
+
+  /* JP hint — like v9 quest-card-jp style */
+  .jp-hint {
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:clamp(1.05rem,3.2vw,1.3rem);
+    font-weight:700; color:var(--brown);
+    line-height:1.4;
+    padding: 8px 14px;
+    background: rgba(245,158,11,0.08);
+    border-radius: 12px;
+    border-left: 2px solid rgba(245,158,11,0.3);
+    width:100%; text-align:center;
+  }
+
+  .question-text {
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(1.2rem,4.5vw,1.6rem);
+    font-weight:600; color:var(--text-soft);
+    line-height:1.3;
+  }
+
+  /* Progress dots */
+  .progress-dots { display:flex; gap:7px; justify-content:center; flex-wrap:wrap; }
+  .dot {
+    width:11px; height:11px; border-radius:50%;
+    background:rgba(42,24,69,0.15);
+    border:1px solid rgba(167,139,250,0.3);
+    transition:background 0.3s;
+  }
+  .dot.done      { background:var(--green); box-shadow:0 0 6px var(--green); }
+  .dot.current   { background:var(--gold);  box-shadow:0 0 8px var(--gold); animation:dotPulse 0.8s ease-in-out infinite; }
+  .dot.wrong-dot { background:var(--mauve); box-shadow:0 0 6px var(--mauve); }
+  @keyframes dotPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.35)} }
+
+  /* Reveal elements — on cream card */
+  .reveal-countdown {
+    font-family:'Fredoka',sans-serif;
+    font-size:0.92rem; font-weight:600;
+    color:var(--tan); min-height:1.4em;
+    animation:countdownPulse 0.5s ease-in-out infinite;
+  }
+  @keyframes countdownPulse { 0%,100%{opacity:0.6} 50%{opacity:1} }
+
+  .answer-reveal {
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(1.2rem,3.8vw,1.6rem); font-weight:700;
+    color:var(--purple-dark);
+    background:rgba(245,158,11,0.1);
+    border:1.5px dashed rgba(245,158,11,0.45);
+    border-radius:12px; padding:8px 22px;
+  }
+  .keep-typing {
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:0.9rem; font-weight:700;
+    color:var(--text-soft);
+    animation:nudgePulse 1.2s ease-in-out infinite;
+  }
+  @keyframes nudgePulse { 0%,100%{opacity:0.7;transform:scale(1)} 50%{opacity:1;transform:scale(1.03)} }
+  .keep-typing.hidden  { display:none; }
+  .answer-reveal.hidden { display:none; }
+  .answer-reveal.visible { display:block; animation:revealPop 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+  @keyframes revealPop { 0%{transform:scale(0.7);opacity:0} 100%{transform:scale(1);opacity:1} }
+
+  /* Input — cream background, dark text, like v9 panel inputs */
+  .input-area { width:100%; display:flex; flex-direction:column; align-items:center; gap:12px; }
+  .type-input {
+    width:100%; padding:16px 20px;
+    font-family:'Fredoka',sans-serif;
+    font-size:max(16px,clamp(1.1rem,3.5vw,1.4rem));
+    font-weight:600;
+    background: var(--cream);
+    color: var(--text-dark);
+    border: 2px solid var(--border-gold);
+    border-radius:16px; outline:none;
+    text-align:center;
+    transition:border-color 0.2s, box-shadow 0.2s;
+    caret-color:var(--purple);
+    -webkit-appearance:none;
+    box-shadow:0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .type-input::placeholder { color:var(--tan); opacity:0.7; }
+  .type-input:focus {
+    border-color:var(--purple);
+    box-shadow:0 0 20px rgba(144,96,192,0.25), 0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .type-input.correct-flash { border-color:var(--green); box-shadow:0 0 24px rgba(74,144,64,0.35); animation:flashCorrect 0.4s ease; }
+  .type-input.wrong-flash   { border-color:var(--mauve);  box-shadow:0 0 24px rgba(192,120,136,0.35); animation:flashWrong 0.3s ease; }
+  @keyframes flashCorrect { 0%{background:rgba(74,144,64,0.1)} 100%{background:var(--cream)} }
+  @keyframes flashWrong { 0%,50%{transform:translateX(-6px)} 25%,75%{transform:translateX(6px)} 100%{transform:translateX(0)} }
+
+  .feedback {
+    font-family:'Fredoka',sans-serif;
+    font-size:clamp(0.92rem,2vw,1.05rem); font-weight:700;
+    min-height:1.5em; transition:opacity 0.3s; text-align:center;
+    color: var(--text-dark);
+  }
+  .feedback.ok  { color:var(--green); }
+  .feedback.bad { color:var(--mauve); }
+
+  /* Particles */
+  .particle {
+    position:fixed; pointer-events:none; z-index:999; font-size:1.3rem;
+    animation:particleFly 0.8s ease-out forwards;
+  }
+  @keyframes particleFly { 0%{opacity:1;transform:translate(0,0) scale(1)} 100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(0.3)} }
+
+  /* ════════════ RESULT SCREEN ════════════ */
+  #screen-result {
+    display:none; flex-direction:column;
+    align-items:center; gap:20px; text-align:center;
+  }
+
+  .result-emblem {
+    font-size:4rem; animation:emblemFloat 2.5s ease-in-out infinite;
+    filter:drop-shadow(0 0 20px var(--gold));
+  }
+
+  .result-title {
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.75rem,2.5vw,1rem);
+    line-height:1.9; white-space:pre-line;
+  }
+  .result-title.great { color:var(--gold-light); text-shadow:0 0 20px rgba(240,208,96,0.6); }
+  .result-title.good  { color:var(--purple-light); text-shadow:0 0 20px rgba(200,160,224,0.6); }
+  .result-title.try   { color:var(--tan); }
+
+  /* Result score box — cream panel like v9 */
+  .result-score-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border-gold);
+    border-radius: 20px; padding:22px 32px; width:100%;
+    box-shadow: 0 4px 24px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.8);
+    color: var(--text-dark);
+  }
+  .big-score {
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(1.4rem,5vw,2rem);
+    color:var(--purple-dark);
+  }
+  .score-label {
+    font-family:'Fredoka',sans-serif;
+    font-size:1rem; font-weight:600;
+    color:var(--text-soft); margin-top:4px;
+  }
+  .score-label-jp {
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:0.9rem; color:var(--brown); margin-top:2px;
+  }
+
+  .stars-row { display:flex; gap:10px; justify-content:center; margin:8px 0; }
+  .star-icon { font-size:2.2rem; filter:grayscale(1) opacity(0.25); transition:filter 0.3s; }
+  .star-icon.lit { filter:grayscale(0) drop-shadow(0 0 10px var(--gold)); animation:starPop 0.4s ease backwards; }
+  @keyframes starPop { 0%{transform:scale(0)} 70%{transform:scale(1.3)} 100%{transform:scale(1)} }
+
+  /* Mistakes — cream panel */
+  .mistakes-list {
+    background: var(--card-bg);
+    border: 1px solid rgba(200,48,48,0.25);
+    border-radius: 16px; padding:16px 18px;
+    width:100%; text-align:left;
+    font-size:clamp(0.85rem,2vw,0.95rem);
+    box-shadow: 0 4px 16px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.8);
+    color: var(--text-dark);
+  }
+  .mistakes-list h3 {
+    font-family:'Fredoka',sans-serif;
+    font-size:1rem; font-weight:700;
+    color:var(--brown); margin-bottom:12px; text-align:center;
+  }
+  .mistake-item {
+    display:flex; justify-content:space-between;
+    align-items:center; padding:6px 0;
+    border-bottom:1px dashed rgba(92,40,16,0.15); gap:12px;
+  }
+  .mistake-item:last-child { border-bottom:none; }
+  .mistake-wrong   { color:var(--mauve); font-weight:700; flex:1; }
+  .mistake-arrow   { color:var(--tan); }
+  .mistake-correct { color:var(--green); font-weight:700; flex:1; text-align:right; }
+
+  /* Play again — like v9 gb-purple button */
+  .btn-play-again {
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.5rem,1.4vw,0.65rem);
+    background: linear-gradient(135deg,#ede0f8,#d8c8f0);
+    color:var(--text-dark);
+    border:2px solid var(--purple);
+    border-radius:14px; padding:14px 30px;
+    cursor:pointer;
+    box-shadow:0 4px 0 #6840a0;
+    transition:transform 0.1s; letter-spacing:0.04em;
+  }
+  .btn-play-again:hover  { transform:translateY(-2px); }
+  .btn-play-again:active { transform:translateY(3px); box-shadow:0 1px 0 #6840a0; }
+
+  .btn-hub {
+    font-family:'Fredoka',sans-serif;
+    font-size:0.9rem; font-weight:600;
+    color:rgba(200,160,224,0.75);
+    background:transparent;
+    border:1px solid rgba(167,139,250,0.25);
+    border-radius:50px; padding:8px 22px;
+    cursor:pointer; text-decoration:none;
+    transition:color 0.2s, border-color 0.2s;
+    display:inline-block;
+  }
+  .btn-hub:hover { color:var(--gold-light); border-color:rgba(245,158,11,0.4); }
+
+
+  /* Reset button — matching v14 sugoroku */
+  .reset-row { text-align:center; margin-top:8px; width:100%; }
+  .reset-btn {
+    background: transparent;
+    border: 1px solid rgba(144,96,192,0.4);
+    border-radius: 50px;
+    padding: 8px 22px;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 0.85rem; font-weight: 700;
+    color: rgba(220,200,240,0.85);
+    cursor: pointer;
+  }
+  .reset-btn:active { background: rgba(144,96,192,0.08); }
+  .hidden { display:none !important; }
+
+  /* ── Combo display ── */
+  .combo-wrap {
+    min-height: 2rem; display:flex; align-items:center; justify-content:center;
+    gap: 6px; margin: 0 0 2px;
+  }
+  .combo-badge {
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.5rem,1.6vw,0.68rem);
+    color:var(--gold-light);
+    text-shadow:0 0 12px rgba(240,208,96,0.7);
+    opacity:0; transition:opacity 0.2s;
+    letter-spacing:0.06em;
+  }
+  .combo-badge.show { opacity:1; animation:comboPop 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes comboPop { 0%{transform:scale(0.4)} 100%{transform:scale(1)} }
+
+  /* ── Lumi result image ── */
+  .result-lumi {
+    width: clamp(90px,28vw,130px);
+    height: clamp(90px,28vw,130px);
+    object-fit: contain;
+    filter: drop-shadow(0 8px 22px rgba(0,0,0,0.5));
+    animation: emblemFloat 3s ease-in-out infinite;
+  }
+
+  /* ── Finish time & new best on result ── */
+  .result-time {
+    font-family:'Fredoka',sans-serif;
+    font-size:0.95rem; font-weight:700;
+    color:var(--purple-light); margin-top:6px;
+  }
+  .result-newbest {
+    font-family:'Press Start 2P',monospace;
+    font-size:0.5rem; color:var(--gold-light);
+    text-shadow:0 0 10px rgba(240,208,96,0.8);
+    letter-spacing:0.1em; margin-top:4px;
+    animation:comboPop 0.5s ease;
+  }
+
+  /* ── Scoreboard screen ── */
+  #screen-scores {
+    display:none; flex-direction:column;
+    align-items:center; gap:16px; width:100%; padding:20px 0 32px;
+  }
+  .panel-h {
+    font-family:'Press Start 2P',monospace;
+    font-size:clamp(0.68rem,3vw,0.88rem);
+    color:var(--gold-light);
+    text-shadow:0 0 18px rgba(240,208,96,0.5);
+    text-align:center; line-height:1.8;
+  }
+  .panel-h .jp {
+    display:block;
+    font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif;
+    font-size:0.85rem; color:var(--purple-light);
+  }
+  .score-list {
+    width:100%; max-width:480px;
+    background:var(--card-bg);
+    border:1px solid var(--border-gold);
+    border-radius:18px; overflow:hidden;
+    box-shadow:0 4px 20px var(--shadow);
+  }
+  .score-item {
+    display:flex; align-items:center;
+    gap:12px; padding:11px 18px;
+    border-bottom:1px solid rgba(144,96,192,0.15);
+    color:var(--text-dark);
+  }
+  .score-item:last-child { border-bottom:none; }
+  .score-rank {
+    font-family:'Press Start 2P',monospace;
+    font-size:0.52rem; color:var(--purple); width:32px;
+  }
+  .score-rank.gold { color:var(--gold); }
+  .score-val {
+    font-family:'Press Start 2P',monospace;
+    font-size:0.58rem; color:var(--text-dark);
+  }
+  .score-time {
+    font-family:'Fredoka',sans-serif;
+    font-size:0.82rem; font-weight:600;
+    color:var(--purple-light); margin-left:auto;
+  }
+
+  /* ── BGM mute toggle ── */
+  .bgm-toggle {
+    background:none; border:none; cursor:pointer;
+    font-size:0.95rem; line-height:1; padding:0; flex-shrink:0;
+  }
+
+  /* ── Mode select ── */
+  .mode-grid {
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:12px; width:100%;
+  }
+  .mode-card {
+    background:var(--card-bg);
+    border:2px solid var(--border-gold);
+    border-radius:18px; padding:18px 10px;
+    cursor:pointer; text-align:center;
+    box-shadow:0 4px 16px var(--shadow), inset 0 1px 0 rgba(255,255,255,0.8);
+    transition:transform 0.2s, box-shadow 0.2s;
+    color:var(--text-dark);
+  }
+  .mode-card:hover  { transform:translateY(-4px); box-shadow:0 8px 24px var(--shadow); }
+  .mode-card:active { transform:translateY(2px); }
+  .mode-card.sel {
+    transform:translateY(3px) scale(1.04);
+    border:3px solid var(--purple);
+    box-shadow:0 0 0 3px rgba(144,96,192,0.35), 0 6px 22px rgba(104,64,160,0.55);
+  }
+  .mode-emoji  { font-size:2rem; display:block; margin-bottom:6px; }
+  .mode-name   { font-family:'Fredoka',sans-serif; font-size:1rem; font-weight:700; color:var(--text-dark); }
+  .mode-count  { font-family:'Zen Maru Gothic','Kosugi Maru',sans-serif; font-size:0.78rem; color:var(--brown); margin-top:3px; }
+  .mode-label  { font-family:'Press Start 2P',monospace; font-size:0.42rem; letter-spacing:0.06em; color:var(--purple-dark); margin-bottom:4px; }
+</style>
+</head>
+<body>
+
+<div class="starfield" id="starfield"></div>
+
+<div class="container">
+
+  <!-- ════ TITLE ════ -->
+  <div id="screen-title">
+    <a href="https://herosproof.github.io" class="title-header" style="text-decoration:none;display:block;cursor:pointer;">
+      <img src="logo.png" alt="Hero's Proof" class="logo-img"
+           onload="document.getElementById('tq-fallback').style.display='none';"
+           onerror="this.style.display='none';">
+      <div id="tq-fallback">
+        <span class="title-emblem">⌨️</span>
+        <div class="logo">HERO'S PROOF</div>
+      </div>
+      <div class="subtitle">✦ Typing Quest · タイピングクエスト ✦</div>
+      <div class="header-divider"></div>
+    </a>
+
+    <div class="instructions">
+      <p class="en">👀 Look at the Japanese hint</p>
+      <p class="jp">ヒントを見て…</p>
+      <br>
+      <p class="en">⌨️ Type the English word or phrase!</p>
+      <p class="jp">英語でタイプしよう！</p>
+      <br>
+      <p class="en">💡 After 5 seconds, the answer appears!</p>
+      <p class="jp">5びょうあとにこたえがでてくるよ！</p>
+      <br>
+      <p class="en">⏱️ 30 seconds per question</p>
+      <p class="jp">1もん30びょうでこたえてね。</p>
+      <br>
+      <p class="en">❤️ 3 mistakes = Game Over!</p>
+      <p class="jp">3かいまちがえたらゲームオーバー！</p>
+    </div>
+
+    <div class="mode-grid">
+      <div class="mode-card sel" id="mode-quick" onclick="selMode('quick')">
+        <span class="mode-label">QUICK QUEST</span>
+        <span class="mode-emoji">⚡</span>
+        <div class="mode-name">Quick Quest</div>
+        <div class="mode-count">10もん / 10 words</div>
+      </div>
+      <div class="mode-card" id="mode-full" onclick="selMode('full')">
+        <span class="mode-label">FULL QUEST</span>
+        <span class="mode-emoji">📜</span>
+        <div class="mode-name">Full Quest</div>
+        <div class="mode-count">20もん / 20 words</div>
+      </div>
+    </div>
+
+    <button class="btn-start" onclick="startGame()">▶ START / スタート</button>
+    <button class="btn-start" onclick="showScores()" style="background:linear-gradient(135deg,var(--gold-pale),var(--gold-light));border-color:var(--gold);box-shadow:0 4px 0 #a07820;color:var(--brown);">🏆 HIGH SCORES / ハイスコア</button>
+    <a href="https://herosproof.github.io" class="btn-hub">🏠 Home / ホーム</a>
+  </div>
+
+  <!-- ════ GAME ════ -->
+  <div id="screen-game">
+    <div class="top-bar">
+      <div class="score-display">💎 <span id="score">0</span></div>
+      <div class="timer-wrap">
+        <div class="timer-label">TIME</div>
+        <div class="timer-bar-bg"><div class="timer-bar" id="timer-bar"></div></div>
+        <div class="timer-num" id="timer-num">30</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="bgm-toggle" id="bgm-btn" onclick="toggleBgm()" title="BGM on/off">🎵</button>
+        <div class="lives" id="lives">❤️❤️❤️</div>
+      </div>
+    </div>
+
+    <div class="combo-wrap">
+      <div class="combo-badge" id="combo-badge"></div>
+    </div>
+
+    <div class="progress-dots" id="progress-dots"></div>
+
+    <div class="question-card">
+      <div id="category-badge" class="category-badge cat-vocab">📚 VOCABULARY</div>
+      <div class="jp-hint" id="jp-hint"></div>
+      <div class="question-text" id="question-text">Type in English!</div>
+      <div class="reveal-countdown" id="reveal-countdown"></div>
+      <div class="answer-reveal hidden" id="answer-reveal"></div>
+      <div class="keep-typing hidden" id="keep-typing">⌨️ Keep typing! / まだタイプできるよ！✨</div>
+    </div>
+
+    <div class="input-area">
+      <input
+        class="type-input" id="type-input"
+        type="text" autocomplete="off" autocorrect="off"
+        autocapitalize="off" spellcheck="false"
+        enterkeyhint="done"
+        placeholder="type here... / ここにタイプ"
+        onkeydown="handleKey(event)" oninput="handleInput(event)"
+      />
+      <div class="feedback" id="feedback"></div>
+    </div>
+    <div class="reset-row">
+      <button class="reset-btn" onclick="confirmResetTQ()">↺ Reset Game / ゲームをリセット</button>
+    </div>
+  </div>
+
+  <!-- ════ RESULT ════ -->
+  <div id="screen-result">
+    <img class="result-lumi" id="result-lumi" alt="Lumi"
+         onerror="this.onerror=null;this.src='lumi.png';">
+    <div class="result-emblem" id="result-emoji">🏆</div>
+    <div class="result-title" id="result-title">HERO'S PROOF!</div>
+
+    <div class="result-score-box">
+      <div class="stars-row">
+        <div class="star-icon" id="star1">⭐</div>
+        <div class="star-icon" id="star2">⭐</div>
+        <div class="star-icon" id="star3">⭐</div>
+      </div>
+      <div class="big-score" id="final-score">0</div>
+      <div class="score-label">points / ポイント</div>
+      <div class="result-time" id="result-time"></div>
+      <div class="result-newbest hidden" id="result-newbest">🌟 NEW BEST!</div>
+      <div class="score-label-jp" id="result-sub"></div>
+    </div>
+
+    <div class="mistakes-list hidden" id="mistakes-list">
+      <h3>📖 Let's Review! / おさらいしよう！</h3>
+      <div id="mistakes-body"></div>
+    </div>
+
+    <button class="btn-play-again" onclick="goTitle()">🔄 PLAY AGAIN / もういちど</button>
+    <button class="btn-play-again" onclick="showScores()" style="background:linear-gradient(135deg,var(--gold-pale),var(--gold-light));border-color:var(--gold);box-shadow:0 4px 0 #a07820;color:var(--brown);">🏆 HIGH SCORES / ハイスコア</button>
+    <a href="https://herosproof.github.io" class="btn-hub">🏠 Home / ホーム</a>
+  </div>
+
+  <!-- ════ SCORES ════ -->
+  <div id="screen-scores">
+    <div class="panel-h">🏆 HIGH SCORES<span class="jp">ハイスコア</span></div>
+    <div style="display:flex;gap:10px;justify-content:center;">
+      <button id="tab-quick" onclick="showScores('quick')"
+        style="font-family:'Press Start 2P',monospace;font-size:0.4rem;padding:8px 14px;border-radius:50px;border:2px solid var(--purple);color:var(--purple-light);background:rgba(255,255,255,0.12);cursor:pointer;letter-spacing:0.06em;">⚡ QUICK</button>
+      <button id="tab-full" onclick="showScores('full')"
+        style="font-family:'Press Start 2P',monospace;font-size:0.4rem;padding:8px 14px;border-radius:50px;border:2px solid var(--gold);color:var(--gold-light);background:transparent;cursor:pointer;letter-spacing:0.06em;">📜 FULL</button>
+    </div>
+    <div class="score-list" id="score-list"></div>
+    <button class="btn-play-again" onclick="goTitle()">↩ Back / もどる</button>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+const questions = [
+  // ── Hero's Proof world vocabulary ──
+  { type:'vocab', hint:'✨ まほう',              answer:'magic',           accept:['magic'] },
+  { type:'vocab', hint:'💪 ゆうき',              answer:'courage',         accept:['courage'] },
+  { type:'vocab', hint:'🗺️ ぼうけん',            answer:'adventure',       accept:['adventure'] },
+  { type:'vocab', hint:'🦸 ヒーロー',            answer:'hero',            accept:['hero'] },
+  { type:'vocab', hint:'💎 クリスタル',           answer:'crystal',         accept:['crystal'] },
+  { type:'vocab', hint:'👫 ともだち',             answer:'friends',         accept:['friends','friend'] },
+  { type:'vocab', hint:'⭐ ほし',                answer:'star',            accept:['star','stars'] },
+  { type:'vocab', hint:'🏰 しろ',                answer:'castle',          accept:['castle'] },
+  { type:'vocab', hint:'🌲 もり',                answer:'forest',          accept:['forest'] },
+  { type:'vocab', hint:'🏔️ やま',                answer:'mountain',        accept:['mountain'] },
+  { type:'vocab', hint:'🐲 ドラゴン',             answer:'dragon',          accept:['dragon'] },
+  { type:'vocab', hint:'👑 おうさま',             answer:'king',            accept:['king'] },
+  // ── Animals ──
+  { type:'vocab', hint:'🐱 ねこ',                answer:'cat',             accept:['cat'] },
+  { type:'vocab', hint:'🐶 いぬ',                answer:'dog',             accept:['dog'] },
+  { type:'vocab', hint:'🐟 さかな',              answer:'fish',            accept:['fish'] },
+  { type:'vocab', hint:'🐦 とり',                answer:'bird',            accept:['bird'] },
+  { type:'vocab', hint:'🐰 うさぎ',              answer:'rabbit',          accept:['rabbit'] },
+  { type:'vocab', hint:'🐵 さる',                answer:'monkey',          accept:['monkey'] },
+  // ── Food & nature ──
+  { type:'vocab', hint:'🍎 りんご',              answer:'apple',           accept:['apple'] },
+  { type:'vocab', hint:'🍌 バナナ',              answer:'banana',          accept:['banana'] },
+  { type:'vocab', hint:'🍕 ピザ',                answer:'pizza',           accept:['pizza'] },
+  { type:'vocab', hint:'🍰 ケーキ',              answer:'cake',            accept:['cake'] },
+  { type:'vocab', hint:'🍦 アイスクリーム',       answer:'ice cream',       accept:['ice cream'] },
+  { type:'vocab', hint:'🥦 ブロッコリー',         answer:'broccoli',        accept:['broccoli'] },
+  { type:'vocab', hint:'🍄 きのこ',              answer:'mushroom',        accept:['mushroom'] },
+  { type:'vocab', hint:'🥛 ぎゅうにゅう',         answer:'milk',            accept:['milk'] },
+  { type:'vocab', hint:'💧 みず',                answer:'water',           accept:['water'] },
+  // ── Nature / Sky / Seasons ──
+  { type:'vocab', hint:'☀️ たいよう',             answer:'sun',             accept:['sun'] },
+  { type:'vocab', hint:'🌙 つき',                answer:'moon',            accept:['moon'] },
+  { type:'vocab', hint:'🌸 はな',                answer:'flower',          accept:['flower'] },
+  { type:'vocab', hint:'🌳 き',                  answer:'tree',            accept:['tree'] },
+  { type:'vocab', hint:'🌊 うみ',                answer:'sea',             accept:['sea','ocean'] },
+  { type:'vocab', hint:'🌤️ そら',                answer:'sky',             accept:['sky'] },
+  { type:'vocab', hint:'🌧️ あめ',                answer:'rain',            accept:['rain'] },
+  { type:'vocab', hint:'❄️ ゆき',                answer:'snow',            accept:['snow'] },
+  { type:'vocab', hint:'🌻 なつ',                answer:'summer',          accept:['summer'] },
+  { type:'vocab', hint:'⛄ ふゆ',                answer:'winter',          accept:['winter'] },
+  { type:'vocab', hint:'🌸 はる',                answer:'spring',          accept:['spring'] },
+  { type:'vocab', hint:'🍂 あき',                answer:'autumn',          accept:['autumn','fall'] },
+  // ── School / everyday ──
+  { type:'vocab', hint:'📚 ほん',                answer:'book',            accept:['book'] },
+  { type:'vocab', hint:'🏫 がっこう',             answer:'school',          accept:['school'] },
+  { type:'vocab', hint:'👩‍🏫 せんせい',             answer:'teacher',         accept:['teacher'] },
+  { type:'vocab', hint:'🍱 たべもの',             answer:'food',            accept:['food'] },
+  { type:'vocab', hint:'⚽ スポーツ',             answer:'sports',          accept:['sports','sport'] },
+  { type:'vocab', hint:'🎵 おんがく',             answer:'music',           accept:['music'] },
+  { type:'vocab', hint:'🎨 びじゅつ',             answer:'art',             accept:['art'] },
+  { type:'vocab', hint:'➕ さんすう',             answer:'math',            accept:['math'] },
+  { type:'vocab', hint:'🔬 りか',                answer:'science',         accept:['science'] },
+  // ── Colors ──
+  { type:'vocab', hint:'🔴 あか',                answer:'red',             accept:['red'] },
+  { type:'vocab', hint:'🔵 あお',                answer:'blue',            accept:['blue'] },
+  { type:'vocab', hint:'🟢 みどり',              answer:'green',           accept:['green'] },
+  { type:'vocab', hint:'🟡 きいろ',              answer:'yellow',          accept:['yellow'] },
+  { type:'vocab', hint:'⚪ しろ',                answer:'white',           accept:['white'] },
+  { type:'vocab', hint:'⚫ くろ',                answer:'black',           accept:['black'] },
+  { type:'vocab', hint:'🟠 オレンジ',             answer:'orange',          accept:['orange'] },
+  { type:'vocab', hint:'🟣 むらさき',             answer:'purple',          accept:['purple'] },
+  { type:'vocab', hint:'🩷 ピンク',              answer:'pink',            accept:['pink'] },
+  // ── Body ──
+  { type:'vocab', hint:'👁️ め',                  answer:'eye',             accept:['eye'] },
+  { type:'vocab', hint:'👂 みみ',                answer:'ear',             accept:['ear'] },
+  { type:'vocab', hint:'🦵 あし',                answer:'leg',             accept:['leg'] },
+  { type:'vocab', hint:'💪 うで',                answer:'arm',             accept:['arm'] },
+  { type:'vocab', hint:'✋ て',                  answer:'hand',            accept:['hand'] },
+  // ── Things ──
+  { type:'vocab', hint:'🥚 たまご',              answer:'egg',             accept:['egg'] },
+  { type:'vocab', hint:'🚗 くるま',              answer:'car',             accept:['car'] },
+  { type:'vocab', hint:'🎩 ぼうし',              answer:'hat',             accept:['hat'] },
+  { type:'vocab', hint:'📦 はこ',                answer:'box',             accept:['box'] },
+  { type:'vocab', hint:'🪟 まど',                answer:'window',          accept:['window'] },
+  { type:'vocab', hint:'🛏️ ベッド',              answer:'bed',             accept:['bed'] },
+  { type:'vocab', hint:'🚀 ロケット',             answer:'rocket',          accept:['rocket'] },
+  { type:'vocab', hint:'👨‍👩‍👧 かぞく',              answer:'family',          accept:['family'] },
+  // ── More animals ──
+  { type:'vocab', hint:'🐻 くま',                 answer:'bear',            accept:['bear'] },
+  { type:'vocab', hint:'🦊 きつね',               answer:'fox',             accept:['fox'] },
+  { type:'vocab', hint:'🐸 かえる',               answer:'frog',            accept:['frog'] },
+  { type:'vocab', hint:'🦁 ライオン',              answer:'lion',            accept:['lion'] },
+  { type:'vocab', hint:'🦆 あひる',               answer:'duck',            accept:['duck'] },
+  { type:'vocab', hint:'🐴 うま',                 answer:'horse',           accept:['horse'] },
+  { type:'vocab', hint:'🐧 ペンギン',              answer:'penguin',         accept:['penguin'] },
+  { type:'vocab', hint:'🐘 ぞう',                 answer:'elephant',        accept:['elephant'] },
+  { type:'vocab', hint:'🦒 きりん',               answer:'giraffe',         accept:['giraffe'] },
+  { type:'vocab', hint:'🐋 くじら',               answer:'whale',           accept:['whale'] },
+  { type:'vocab', hint:'🦈 さめ',                 answer:'shark',           accept:['shark'] },
+  { type:'vocab', hint:'🐢 かめ',                 answer:'turtle',          accept:['turtle'] },
+  { type:'vocab', hint:'🐝 はち',                 answer:'bee',             accept:['bee'] },
+  { type:'vocab', hint:'🦋 ちょう',               answer:'butterfly',       accept:['butterfly'] },
+  { type:'vocab', hint:'🐺 おおかみ',              answer:'wolf',            accept:['wolf'] },
+  { type:'vocab', hint:'🦉 ふくろう',              answer:'owl',             accept:['owl'] },
+  { type:'vocab', hint:'🦓 しまうま',              answer:'zebra',           accept:['zebra'] },
+  { type:'vocab', hint:'🐪 らくだ',               answer:'camel',           accept:['camel'] },
+  { type:'vocab', hint:'🐼 パンダ',               answer:'panda',           accept:['panda'] },
+  { type:'vocab', hint:'🐨 コアラ',               answer:'koala',           accept:['koala'] },
+  { type:'vocab', hint:'🐭 ねずみ',               answer:'mouse',           accept:['mouse'] },
+  { type:'vocab', hint:'🐍 へび',                 answer:'snake',           accept:['snake'] },
+  { type:'vocab', hint:'🐯 とら',                 answer:'tiger',           accept:['tiger'] },
+  { type:'vocab', hint:'🦍 ゴリラ',               answer:'gorilla',         accept:['gorilla'] },
+  { type:'vocab', hint:'🐬 いるか',               answer:'dolphin',         accept:['dolphin'] },
+  { type:'vocab', hint:'🐔 にわとり',              answer:'chicken',         accept:['chicken'] },
+  { type:'vocab', hint:'🐜 あり',                 answer:'ant',             accept:['ant'] },
+  { type:'vocab', hint:'🐷 ぶた',                 answer:'pig',             accept:['pig'] },
+  // ── More food ──
+  // ── Clothing ──
+  { type:'vocab', hint:'👟 くつ',                 answer:'shoes',           accept:['shoes'] },
+  { type:'vocab', hint:'👖 ズボン',               answer:'pants',           accept:['pants'] },
+  { type:'vocab', hint:'👖 ジーンズ',              answer:'jeans',           accept:['jeans'] },
+  { type:'vocab', hint:'👕 シャツ',               answer:'shirt',           accept:['shirt'] },
+  { type:'vocab', hint:'🧤 てぶくろ',              answer:'glove',           accept:['glove'] },
+  { type:'vocab', hint:'👗 スカート',              answer:'skirt',           accept:['skirt'] },
+  { type:'vocab', hint:'👗 ドレス',               answer:'dress',           accept:['dress'] },
+  { type:'vocab', hint:'👢 ブーツ',               answer:'boots',           accept:['boots'] },
+  { type:'vocab', hint:'🧥 ジャケット',            answer:'jacket',          accept:['jacket'] },
+  { type:'vocab', hint:'👓 めがね',               answer:'glasses',         accept:['glasses'] },
+  { type:'vocab', hint:'🧣 マフラー',              answer:'scarf',           accept:['scarf'] },
+  { type:'vocab', hint:'🧦 くつした',              answer:'socks',           accept:['socks'] },
+  { type:'vocab', hint:'👕 ユニフォーム',           answer:'uniform',         accept:['uniform'] },
+  { type:'vocab', hint:'☂️ かさ',                 answer:'umbrella',        accept:['umbrella'] },
+  // ── Jobs / people ──
+  { type:'vocab', hint:'👩‍⚕️ かんごし',              answer:'nurse',           accept:['nurse'] },
+  { type:'vocab', hint:'✈️ パイロット',             answer:'pilot',           accept:['pilot'] },
+  { type:'vocab', hint:'👨 おじさん',              answer:'uncle',           accept:['uncle'] },
+  { type:'vocab', hint:'🧒 こども',               answer:'child',           accept:['child'] },
+  { type:'vocab', hint:'👨‍⚕️ いしゃ',               answer:'doctor',          accept:['doctor'] },
+  { type:'vocab', hint:'👨‍🌾 のうか',               answer:'farmer',          accept:['farmer'] },
+  { type:'vocab', hint:'👩‍🔬 かがくしゃ',            answer:'scientist',       accept:['scientist'] },
+  { type:'vocab', hint:'🧑‍🚒 しょうぼうし',          answer:'firefighter',     accept:['firefighter'] },
+  { type:'vocab', hint:'🎤 かしゅ',               answer:'singer',          accept:['singer'] },
+  // ── Body (extra) ──
+  { type:'vocab', hint:'👃 はな',                 answer:'nose',            accept:['nose'] },
+  { type:'vocab', hint:'👄 くち',                 answer:'mouth',           accept:['mouth'] },
+  { type:'vocab', hint:'🦶 あし',                 answer:'foot',            accept:['foot'] },
+  { type:'vocab', hint:'🦷 は',                   answer:'teeth',           accept:['teeth'] },
+  { type:'vocab', hint:'👍 おやゆび',              answer:'thumb',           accept:['thumb'] },
+  // ── Sports & activities ──
+  { type:'vocab', hint:'⚽ サッカー',              answer:'soccer',          accept:['soccer'] },
+  { type:'vocab', hint:'🏀 バスケットボール',       answer:'basketball',      accept:['basketball'] },
+  { type:'vocab', hint:'⚾ やきゅう',              answer:'baseball',        accept:['baseball'] },
+  { type:'vocab', hint:'🎾 テニス',               answer:'tennis',          accept:['tennis'] },
+  { type:'vocab', hint:'🏸 バドミントン',           answer:'badminton',       accept:['badminton'] },
+  { type:'vocab', hint:'🏉 ラグビー',              answer:'rugby',           accept:['rugby'] },
+  { type:'vocab', hint:'🥋 けんどう',              answer:'kendo',           accept:['kendo'] },
+  { type:'vocab', hint:'💃 ダンス',               answer:'dance',           accept:['dance'] },
+  { type:'vocab', hint:'🏊 すいえい',              answer:'swimming',        accept:['swimming'] },
+  { type:'vocab', hint:'🎿 スキー',               answer:'skiing',          accept:['skiing'] },
+  { type:'vocab', hint:'🏂 スノーボード',           answer:'snowboarding',    accept:['snowboarding'] },
+  { type:'vocab', hint:'⛸️ スケート',              answer:'skate',           accept:['skate'] },
+  { type:'vocab', hint:'🎣 つり',                 answer:'fishing',         accept:['fishing'] },
+  { type:'vocab', hint:'🏕️ キャンプ',              answer:'camping',         accept:['camping'] },
+  { type:'vocab', hint:'🥾 ハイキング',            answer:'hiking',          accept:['hiking'] },
+  // ── Instruments ──
+  { type:'vocab', hint:'🎸 ギター',               answer:'guitar',          accept:['guitar'] },
+  { type:'vocab', hint:'🎻 バイオリン',            answer:'violin',          accept:['violin'] },
+  { type:'vocab', hint:'🥁 ドラム',               answer:'drum',            accept:['drum'] },
+  { type:'vocab', hint:'🖍️ クレヨン',              answer:'crayon',          accept:['crayon'] },
+  // ── Numbers ──
+  { type:'vocab', hint:'7️⃣ なな',                 answer:'seven',           accept:['seven'] },
+  { type:'vocab', hint:'8️⃣ はち',                 answer:'eight',           accept:['eight'] },
+  { type:'vocab', hint:'3️⃣ さん',                 answer:'three',           accept:['three'] },
+  { type:'vocab', hint:'🔢 よんじゅう',            answer:'forty',           accept:['forty'] },
+  { type:'vocab', hint:'🔢 ごじゅう',              answer:'fifty',           accept:['fifty'] },
+  { type:'vocab', hint:'🔢 ろくじゅう',            answer:'sixty',           accept:['sixty'] },
+  // ── Transport ──
+  { type:'vocab', hint:'🚌 バス',                 answer:'bus',             accept:['bus'] },
+  { type:'vocab', hint:'✈️ ひこうき',              answer:'plane',           accept:['plane'] },
+  { type:'vocab', hint:'🚂 でんしゃ',              answer:'train',           accept:['train'] },
+  { type:'vocab', hint:'🚢 ふね',                 answer:'ship',            accept:['ship'] },
+  { type:'vocab', hint:'🚲 じてんしゃ',            answer:'bike',            accept:['bike'] },
+  // ── Places / buildings ──
+  { type:'vocab', hint:'🏛️ はくぶつかん',           answer:'museum',          accept:['museum'] },
+  { type:'vocab', hint:'📚 としょかん',             answer:'library',         accept:['library'] },
+  { type:'vocab', hint:'🏥 びょういん',             answer:'hospital',        accept:['hospital'] },
+  { type:'vocab', hint:'🌳 こうえん',              answer:'park',            accept:['park'] },
+  { type:'vocab', hint:'🌻 にわ',                 answer:'garden',          accept:['garden'] },
+  { type:'vocab', hint:'🍽️ レストラン',            answer:'restaurant',      accept:['restaurant'] },
+  { type:'vocab', hint:'🌊 たいよう',              answer:'ocean',           accept:['ocean','sea'] },
+  { type:'vocab', hint:'🏞️ みずうみ',              answer:'lake',            accept:['lake'] },
+  { type:'vocab', hint:'🏜️ さばく',               answer:'desert',          accept:['desert'] },
+  { type:'vocab', hint:'🏠 いえ',                 answer:'house',           accept:['house'] },
+  { type:'vocab', hint:'☕ カフェ',               answer:'cafe',            accept:['cafe'] },
+  { type:'vocab', hint:'🏪 スーパーマーケット',     answer:'supermarket',     accept:['supermarket'] },
+  { type:'vocab', hint:'🚏 バスてい',              answer:'bus stop',        accept:['bus stop'] },
+  { type:'vocab', hint:'🏣 ゆうびんきょく',         answer:'post office',     accept:['post office'] },
+  { type:'vocab', hint:'🚔 こうばん',              answer:'police station',  accept:['police station'] },
+  // ── Nature (extra) ──
+  { type:'vocab', hint:'🔥 ひ',                   answer:'fire',            accept:['fire'] },
+  { type:'vocab', hint:'🌈 にじ',                 answer:'rainbow',         accept:['rainbow'] },
+  { type:'vocab', hint:'🏞️ かわ',                 answer:'river',           accept:['river'] },
+  { type:'vocab', hint:'☀️ はれ',                 answer:'sunny',           accept:['sunny'] },
+  { type:'vocab', hint:'🌧️ あめのひ',              answer:'rainy',           accept:['rainy'] },
+  { type:'vocab', hint:'💨 かぜのひ',              answer:'windy',           accept:['windy'] },
+  { type:'vocab', hint:'❄️ ゆきのひ',              answer:'snowy',           accept:['snowy'] },
+  { type:'vocab', hint:'🌆 ゆうがた',              answer:'evening',         accept:['evening'] },
+  { type:'vocab', hint:'🌙 よる',                 answer:'night',           accept:['night'] },
+  // ── Adjectives / feelings ──
+  { type:'vocab', hint:'😊 しあわせ',              answer:'happy',           accept:['happy'] },
+  { type:'vocab', hint:'😴 つかれた',              answer:'tired',           accept:['tired'] },
+  { type:'vocab', hint:'🧠 かしこい',              answer:'smart',           accept:['smart'] },
+  { type:'vocab', hint:'📏 みじかい',              answer:'short',           accept:['short'] },
+  { type:'vocab', hint:'✔️ ただしい',              answer:'right',           accept:['right'] },
+  { type:'vocab', hint:'🚫 けっして～ない',         answer:'never',           accept:['never'] },
+  { type:'vocab', hint:'🧹 きれい',               answer:'clean',           accept:['clean'] },
+  { type:'vocab', hint:'💧 むしあつい',            answer:'humid',           accept:['humid'] },
+  { type:'vocab', hint:'😃 すばらしい',            answer:'great',           accept:['great'] },
+  { type:'vocab', hint:'😔 かなしい',              answer:'sad',             accept:['sad'] },
+  { type:'vocab', hint:'😠 おこっている',           answer:'angry',           accept:['angry'] },
+  { type:'vocab', hint:'😰 きんちょう',            answer:'nervous',         accept:['nervous'] },
+  { type:'vocab', hint:'😳 はずかしい',            answer:'shy',             accept:['shy'] },
+  { type:'vocab', hint:'😴 ねむい',               answer:'sleepy',          accept:['sleepy'] },
+  // ── Objects / school ──
+  { type:'vocab', hint:'⚽ ボール',               answer:'ball',            accept:['ball'] },
+  { type:'vocab', hint:'✏️ えんぴつ',              answer:'pencil',          accept:['pencil'] },
+  { type:'vocab', hint:'📏 じょうぎ',              answer:'ruler',           accept:['ruler'] },
+  { type:'vocab', hint:'🎹 ピアノ',               answer:'piano',           accept:['piano'] },
+  { type:'vocab', hint:'⌚ とけい',               answer:'watch',           accept:['watch'] },
+  { type:'vocab', hint:'🪑 いす',                 answer:'chair',           accept:['chair'] },
+  { type:'vocab', hint:'🃏 トランプ',              answer:'cards',           accept:['cards'] },
+  { type:'vocab', hint:'🥛 コップ',               answer:'glass',           accept:['glass'] },
+  { type:'vocab', hint:'🧱 ブロック',              answer:'block',           accept:['block'] },
+  { type:'vocab', hint:'🎬 えいが',               answer:'movie',           accept:['movie'] },
+  { type:'vocab', hint:'🎭 ドラマ',               answer:'drama',           accept:['drama'] },
+  { type:'vocab', hint:'❤️ こころ',               answer:'heart',           accept:['heart'] },
+  { type:'vocab', hint:'🏆 コンテスト',            answer:'contest',         accept:['contest'] },
+  { type:'vocab', hint:'🎵 がっしょう',            answer:'chorus',          accept:['chorus'] },
+  { type:'vocab', hint:'🏙️ まち',                 answer:'city',            accept:['city'] },
+  { type:'vocab', hint:'🔮 みらい',               answer:'future',          accept:['future'] },
+  { type:'vocab', hint:'✈️ きゅうか',              answer:'vacation',        accept:['vacation'] },
+  { type:'vocab', hint:'🌍 せかい',               answer:'world',           accept:['world'] },
+  { type:'vocab', hint:'📖 べんきょうする',         answer:'study',           accept:['study'] },
+  { type:'vocab', hint:'⚾ キャッチする',           answer:'catch',           accept:['catch'] },
+  { type:'vocab', hint:'🥤 のみもの',              answer:'drink',           accept:['drink'] },
+  { type:'vocab', hint:'📷 カメラ',               answer:'camera',          accept:['camera'] },
+  { type:'vocab', hint:'📱 スマホ',               answer:'phone',           accept:['phone'] },
+  { type:'vocab', hint:'📷 しゃしん',              answer:'photo',           accept:['photo'] },
+  { type:'vocab', hint:'🗺️ ちず',                 answer:'map',             accept:['map'] },
+  { type:'vocab', hint:'📓 ノート',               answer:'notebook',        accept:['notebook'] },
+  { type:'vocab', hint:'📖 じしょ',               answer:'dictionary',      accept:['dictionary'] },
+  { type:'vocab', hint:'✂️ はさみ',               answer:'scissors',        accept:['scissors'] },
+  { type:'vocab', hint:'🪑 つくえ',               answer:'desk',            accept:['desk'] },
+  { type:'vocab', hint:'🪑 テーブル',              answer:'table',           accept:['table'] },
+  { type:'vocab', hint:'🪑 ベンチ',               answer:'bench',           accept:['bench'] },
+  { type:'vocab', hint:'⏰ とけい',               answer:'clock',           accept:['clock'] },
+  { type:'vocab', hint:'🍳 だいどころ',            answer:'kitchen',         accept:['kitchen'] },
+  { type:'vocab', hint:'🧺 かご',                 answer:'basket',          accept:['basket'] },
+  { type:'vocab', hint:'⛺ テント',               answer:'tent',            accept:['tent'] },
+  { type:'vocab', hint:'👜 かばん',               answer:'bag',             accept:['bag'] },
+  { type:'vocab', hint:'🏟️ スタジアム',            answer:'stadium',         accept:['stadium'] },
+  { type:'vocab', hint:'🎋 たなばた',              answer:'star festival',   accept:['star festival'] },
+  { type:'vocab', hint:'🎃 ハロウィン',            answer:'halloween',       accept:['halloween'] },
+  { type:'vocab', hint:'🎄 クリスマス',            answer:'christmas',       accept:['christmas'] },
+  { type:'vocab', hint:'🎉 パーティー',            answer:'party',           accept:['party'] },
+  { type:'vocab', hint:'🎁 プレゼント',            answer:'present',         accept:['present'] },
+  { type:'vocab', hint:'💬 はなす',               answer:'speak',           accept:['speak'] },
+  { type:'vocab', hint:'🏁 スタート',              answer:'start',           accept:['start'] },
+  { type:'vocab', hint:'⛩️ じんじゃ',              answer:'shrine',          accept:['shrine'] },
+  { type:'vocab', hint:'🌍 どうぶつ',              answer:'animal',          accept:['animal'] },
+  { type:'vocab', hint:'🏅 スポーツ',              answer:'sport',           accept:['sport','sports'] },
+  { type:'vocab', hint:'🏅 しょうひん',            answer:'trophy',          accept:['trophy'] },
+  // ── Harder vocab (matching Hard Quest Card deck) ──
+  { type:'vocab', hint:'🌟 すばらしい',           answer:'wonderful',       accept:['wonderful'] },
+  { type:'vocab', hint:'🤩 すてき・きれい',        answer:'beautiful',       accept:['beautiful'] },
+  { type:'vocab', hint:'😋 おいしい',             answer:'delicious',       accept:['delicious'] },
+  { type:'vocab', hint:'💪 ゆうかん',             answer:'brave',           accept:['brave'] },
+  { type:'vocab', hint:'🎉 すごい！',             answer:'fantastic',       accept:['fantastic'] },
+  // ── Phrases ──
+  { type:'phrase', caseSensitive:true, hint:'😊 げんきですか？',         answer:'How are you?',         accept:['How are you?'] },
+  { type:'phrase', caseSensitive:true, hint:'🌅 おはようございます！',   answer:'Good morning!',        accept:['Good morning!'] },
+  { type:'phrase', caseSensitive:true, hint:'👋 こんにちは！',           answer:'Hello!',               accept:['Hello!','Hi!'] },
+  { type:'phrase', caseSensitive:true, hint:'🙏 ありがとう！',           answer:'Thank you!',           accept:['Thank you!','Thanks!'] },
+  { type:'phrase', caseSensitive:true, hint:'❤️ なにが すき？',          answer:'What do you like?',    accept:['What do you like?'] },
+  { type:'phrase', caseSensitive:true, hint:'🌍 どこから きましたか？',  answer:'Where are you from?',  accept:['Where are you from?'] },
+  { type:'phrase', caseSensitive:true, hint:'✊ わたしはできる！',        answer:'I can do it!',         accept:['I can do it!'] },
+  { type:'phrase', caseSensitive:true, hint:'🚀 いこう！',               answer:"Let's go!",            accept:["Let's go!"] },
+  { type:'phrase', caseSensitive:true, hint:'💖 すきです！',             answer:'I like it!',           accept:['I like it!'] },
+  { type:'phrase', caseSensitive:true, hint:'💭 ゆめはなに？',           answer:'What is your dream?',  accept:['What is your dream?'] },
+  // ── Countries ──
+  { type:'place', caseSensitive:true, hint:'🇯🇵 にほん',          answer:'Japan',           accept:['Japan'] },
+  { type:'place', caseSensitive:true, hint:'🇺🇸 アメリカ',        answer:'America',         accept:['America'] },
+  { type:'place', caseSensitive:true, hint:'🇦🇺 オーストラリア',  answer:'Australia',       accept:['Australia'] },
+  { type:'place', caseSensitive:true, hint:'🇨🇦 カナダ',          answer:'Canada',          accept:['Canada'] },
+  { type:'place', caseSensitive:true, hint:'🇨🇳 ちゅうごく',      answer:'China',           accept:['China'] },
+  { type:'place', caseSensitive:true, hint:'🇰🇷 かんこく',        answer:'Korea',           accept:['Korea'] },
+  { type:'place', caseSensitive:true, hint:'🇫🇷 フランス',        answer:'France',          accept:['France'] },
+  { type:'place', caseSensitive:true, hint:'🇮🇹 イタリア',        answer:'Italy',           accept:['Italy'] },
+  { type:'place', caseSensitive:true, hint:'🇧🇷 ブラジル',        answer:'Brazil',          accept:['Brazil'] },
+  { type:'place', caseSensitive:true, hint:'🇬🇧 イギリス',        answer:'the U.K.',        accept:['the U.K.','the UK'] },
+  { type:'place', caseSensitive:true, hint:'🇬🇺 グアム',          answer:'Guam',            accept:['Guam'] },
+  { type:'place', caseSensitive:true, hint:'🇵🇭 フィリピン',      answer:'the Philippines', accept:['the Philippines'] },
+  { type:'place', caseSensitive:true, hint:'🇳🇿 ニュージーランド', answer:'New Zealand',     accept:['New Zealand'] },
+  { type:'place', caseSensitive:true, hint:'🇮🇳 インド',          answer:'India',           accept:['India'] },
+  { type:'place', caseSensitive:true, hint:'🇪🇬 エジプト',        answer:'Egypt',           accept:['Egypt'] },
+  { type:'place', caseSensitive:true, hint:'🇬🇭 ガーナ',          answer:'Ghana',           accept:['Ghana'] },
+  { type:'place', caseSensitive:true, hint:'🇲🇽 メキシコ',        answer:'Mexico',          accept:['Mexico'] },
+  { type:'place', caseSensitive:true, hint:'🇩🇪 ドイツ',          answer:'Germany',         accept:['Germany'] },
+  { type:'place', caseSensitive:true, hint:'🇵🇪 ペルー',          answer:'Peru',            accept:['Peru'] },
+  { type:'place', caseSensitive:true, hint:'🇳🇴 ノルウェー',      answer:'Norway',          accept:['Norway'] },
+  // ── Japanese prefectures ──
+  { type:'place', caseSensitive:true, hint:'🗼 とうきょうと',     answer:'Tokyo',           accept:['Tokyo'] },
+  { type:'place', caseSensitive:true, hint:'🏯 おおさかふ',       answer:'Osaka',           accept:['Osaka'] },
+  { type:'place', caseSensitive:true, hint:'⛩️ きょうとふ',       answer:'Kyoto',           accept:['Kyoto'] },
+  { type:'place', caseSensitive:true, hint:'🦊 ほっかいどう',     answer:'Hokkaido',        accept:['Hokkaido'] },
+  { type:'place', caseSensitive:true, hint:'🌺 おきなわけん',     answer:'Okinawa',         accept:['Okinawa'] },
+  { type:'place', caseSensitive:true, hint:'🕊️ ひろしまけん',     answer:'Hiroshima',       accept:['Hiroshima'] },
+  { type:'place', caseSensitive:true, hint:'🍜 ふくおかけん',     answer:'Fukuoka',         accept:['Fukuoka'] },
+  { type:'place', caseSensitive:true, hint:'🚗 あいちけん',       answer:'Aichi',           accept:['Aichi'] },
+  { type:'place', caseSensitive:true, hint:'🗻 やまなしけん',     answer:'Yamanashi',       accept:['Yamanashi'] },
+  { type:'place', caseSensitive:true, hint:'🦌 ならけん',         answer:'Nara',            accept:['Nara'] },
+];
+
+const TIME_PER_Q        = 30;
+const HINT_REVEAL_AFTER = 5;
+const MAX_LIVES         = 3;
+const MODE_COUNTS       = {quick:10, full:20};
+
+let selectedMode = 'quick';
+function selMode(m) {
+  selectedMode = m;
+  document.getElementById('mode-quick').classList.toggle('sel', m==='quick');
+  document.getElementById('mode-full').classList.toggle('sel', m==='full');
+}
+
+let gameQuestions=[], current=0, score=0, lives=MAX_LIVES;
+let questionCount=10;
+let timer=TIME_PER_Q, timerInterval=null;
+let mistakes=[], answered=false, hintRevealed=false;
+let combo=0, maxCombo=0, gameStartTime=0, gameFinishTime=0;
+let perfectGame=true;
+
+// ── Background ──
+function setupBackground() {
+  const sf = document.getElementById('starfield');
+  const glyphs = ['✦','✧','⋆','✴','★','✸','·','✦','✧'];
+  const colors = ['#f0d060','#c9a030','#d9c9a8','#f0d060','#c8a0e0','#f8f0c0'];
+  for(let i=0;i<70;i++){
+    const s=document.createElement('span');
+    const sz=(Math.random()*1.2+0.5).toFixed(2);
+    const glyph=glyphs[Math.floor(Math.random()*glyphs.length)];
+    const col=colors[Math.floor(Math.random()*colors.length)];
+    s.textContent=glyph;
+    s.style.cssText=`top:${Math.random()*100}%;left:${Math.random()*100}%;--d:${2+Math.random()*5}s;--delay:-${Math.random()*7}s;--sz:${sz}rem;--col:${col};`;
+    sf.appendChild(s);
+  }
+}
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function show(id) {
+  ['screen-title','screen-game','screen-result','screen-scores'].forEach(s => {
+    document.getElementById(s).style.display = 'none';
+  });
+  document.getElementById(id).style.display = 'flex';
+  window.scrollTo(0,0);
+}
+
+function startGame() {
+  questionCount = MODE_COUNTS[selectedMode];
+  gameQuestions = shuffle(questions).slice(0, questionCount);
+  current=0; score=0; lives=MAX_LIVES; mistakes=[];
+  combo=0; maxCombo=0; perfectGame=true;
+  gameStartTime = Date.now(); gameFinishTime=0;
+  document.getElementById('score').textContent = 0;
+  updateLives();
+  updateComboDisplay();
+  show('screen-game');
+  buildDots();
+  startBgm();
+  loadQuestion();
+}
+
+function buildDots() {
+  const el = document.getElementById('progress-dots');
+  el.innerHTML = '';
+  for (let i = 0; i < questionCount; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0 ? ' current' : '');
+    d.id = `dot-${i}`;
+    el.appendChild(d);
+  }
+}
+
+function updateDot(idx, state) {
+  const d = document.getElementById(`dot-${idx}`);
+  if (d) d.className = 'dot ' + state;
+}
+
+function loadQuestion() {
+  if (current >= questionCount) { endGame(); return; }
+  answered=false; hintRevealed=false;
+  const q = gameQuestions[current];
+
+  document.getElementById('jp-hint').textContent = q.hint;
+  document.getElementById('question-text').textContent = 'Type in English!';
+  document.getElementById('answer-reveal').textContent = '';
+  document.getElementById('answer-reveal').className = 'answer-reveal hidden';
+  document.getElementById('keep-typing').classList.add('hidden');
+  document.getElementById('reveal-countdown').textContent = '';
+
+  const badge = document.getElementById('category-badge');
+  if (q.type === 'vocab') {
+    badge.textContent = '📚 VOCABULARY / たんご';
+    badge.className = 'category-badge cat-vocab';
+  } else if (q.type === 'place') {
+    badge.textContent = '🌍 PLACE / ちめい';
+    badge.className = 'category-badge cat-place';
+  } else {
+    badge.textContent = '💬 PHRASE / フレーズ';
+    badge.className = 'category-badge cat-phrase';
+  }
+
+  const inp = document.getElementById('type-input');
+  inp.value = ''; inp.className = 'type-input'; inp.focus();
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback';
+  updateDot(current, 'current');
+
+  // Auto-speak the answer word/phrase via TTS
+  speakAnswer(q.answer);
+
+  startTimer();
+}
+
+function speakAnswer(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US';
+  utter.rate = 0.88;
+  utter.pitch = 1;
+  utter.volume = 0.9;
+  window.speechSynthesis.speak(utter);
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timer=TIME_PER_Q; hintRevealed=false;
+  updateTimerUI();
+  timerInterval = setInterval(() => {
+    timer--;
+    updateTimerUI();
+    const elapsed = TIME_PER_Q - timer;
+    if (elapsed >= HINT_REVEAL_AFTER-3 && elapsed < HINT_REVEAL_AFTER && !hintRevealed)
+      document.getElementById('reveal-countdown').textContent = `💡 Answer in ${HINT_REVEAL_AFTER - elapsed}...`;
+    if (elapsed >= HINT_REVEAL_AFTER && !hintRevealed) {
+      hintRevealed = true;
+      document.getElementById('reveal-countdown').textContent = '';
+      const rev = document.getElementById('answer-reveal');
+      rev.textContent = '👉 ' + gameQuestions[current].answer;
+      rev.className = 'answer-reveal visible';
+      document.getElementById('keep-typing').classList.remove('hidden');
+      speakAnswer(gameQuestions[current].answer);
+    }
+    if (timer <= 0) { clearInterval(timerInterval); timeUp(); }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const bar = document.getElementById('timer-bar');
+  const num = document.getElementById('timer-num');
+  bar.style.width = (timer / TIME_PER_Q * 100) + '%';
+  num.textContent = timer;
+  const low = timer <= 5;
+  if (low && timer > 0) startTimerWarning(); else if (!low) stopTimerWarning();
+  bar.className = 'timer-bar' + (low ? ' low' : '');
+  num.className = 'timer-num' + (low ? ' low' : '');
+}
+
+function timeUp() {
+  stopTimerWarning();
+  if (answered) return;
+  answered = true;
+  combo = 0; perfectGame = false;
+  showFeedback('⏰ Time! → ' + gameQuestions[current].answer, false);
+  recordMistake(null, gameQuestions[current]);
+  loseLife();
+  updateDot(current, 'wrong-dot');
+  updateComboDisplay();
+  setTimeout(nextQuestion, 1500);
+}
+
+function handleKey(e)   { if (e.key === 'Enter') checkAnswer(); }
+function handleInput(e) {
+  sfxType();
+  if (answered) return;
+  const q = gameQuestions[current];
+  const raw = e.target.value.trim();
+  const v = q.caseSensitive ? raw : raw.toLowerCase();
+  if (q.accept.includes(v)) checkAnswer();
+}
+
+function checkAnswer() {
+  if (answered) return;
+  const q = gameQuestions[current];
+  const inp = document.getElementById('type-input');
+  const raw = inp.value.trim();
+  const val = q.caseSensitive ? raw : raw.toLowerCase();
+  if (!val) return;
+  answered = true;
+  stopTimerWarning();
+  clearInterval(timerInterval);
+
+  if (q.accept.includes(val)) {
+    combo++;
+    maxCombo = Math.max(maxCombo, combo);
+    // Score: speed (10-100) × combo multiplier (1.0, 1.2, 1.5, 2.0 at 3/5/8+)
+    const speedPts = Math.max(10, Math.floor(timer / TIME_PER_Q * 100));
+    const mult = combo >= 8 ? 2.0 : combo >= 5 ? 1.5 : combo >= 3 ? 1.2 : 1.0;
+    const pts = Math.round(speedPts * mult);
+    score += pts;
+    document.getElementById('score').textContent = score;
+    inp.className = 'type-input correct-flash';
+    sfxCorrect();
+    const multStr = mult > 1 ? ` ×${mult}` : '';
+    showFeedback('✅ ＋' + pts + ' pts' + multStr, true);
+    spawnParticles(inp, ['⭐','✨','💎','✦']);
+    updateDot(current, 'done');
+    updateComboDisplay();
+    setTimeout(nextQuestion, 900);
+  } else {
+    combo = 0;
+    perfectGame = false;
+    inp.className = 'type-input wrong-flash';
+    sfxWrong();
+    showFeedback('❌ → ' + q.answer, false);
+    recordMistake(val, q);
+    loseLife();
+    updateDot(current, 'wrong-dot');
+    updateComboDisplay();
+    setTimeout(nextQuestion, 1400);
+  }
+}
+
+function recordMistake(typed, q) {
+  if (!mistakes.find(m => m.q === q)) mistakes.push({ typed, q });
+}
+
+function loseLife() {
+  lives--;
+  updateLives();
+  if (lives <= 0) { clearInterval(timerInterval); setTimeout(endGame, 1200); }
+}
+
+function updateLives() {
+  document.getElementById('lives').textContent =
+    Array.from({length:MAX_LIVES}, (_,i) => i < lives ? '❤️' : '🖤').join('');
+}
+
+function nextQuestion() {
+  if (lives <= 0) return;
+  current++;
+  if (current >= questionCount) { endGame(); return; }
+  loadQuestion();
+}
+
+function showFeedback(msg, ok) {
+  const el = document.getElementById('feedback');
+  el.textContent = msg;
+  el.className = 'feedback ' + (ok ? 'ok' : 'bad');
+}
+
+function spawnParticles(el, symbols) {
+  const r = el.getBoundingClientRect();
+  const cx = r.left + r.width/2, cy = r.top + r.height/2;
+  for (let i = 0; i < 8; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+    const a = (Math.PI*2*i/8) + Math.random()*0.5;
+    const d = 60 + Math.random()*60;
+    p.style.cssText = `left:${cx}px;top:${cy}px;--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px;animation-delay:${Math.random()*0.1}s;`;
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 900);
+  }
+}
+
+function endGame() {
+  clearInterval(timerInterval);
+  show('screen-result');
+  stopTimerWarning();
+  stopBgm();
+
+  gameFinishTime = Date.now();
+  const elapsedMs = gameFinishTime - gameStartTime;
+  const elapsedSec = Math.floor(elapsedMs / 1000);
+  const mm = Math.floor(elapsedSec / 60);
+  const ss = String(elapsedSec % 60).padStart(2,'0');
+  const timeStr = mm + ':' + ss;
+
+  // Perfect game bonus
+  if (perfectGame && mistakes.length === 0) {
+    score += 200;
+    document.getElementById('score').textContent = score;
+  }
+
+  const pct = score / (questionCount * 100 * 2 + 200); // max possible with all ×2 + perfect bonus
+  const correctCount = questionCount - mistakes.length;
+
+  let stars, emoji, cls, title, sub;
+  if (correctCount === questionCount && mistakes.length === 0) {
+    stars=3; emoji='🏆'; cls='great';
+    title="HERO'S PROOF!\nかんぺき！";
+    sub="Perfect! You're a true English hero! / かんぺき！ほんものの英語ヒーロー！";
+  } else if (correctCount >= Math.ceil(questionCount * 0.7)) {
+    stars=2; emoji='⚔️'; cls='good';
+    title="WELL DONE!\nよくできました！";
+    sub="Great effort! Keep going! / がんばったね！もっとれんしゅうしよう！";
+  } else {
+    stars=1; emoji='💪'; cls='try';
+    title="TRY AGAIN!\nもういちど！";
+    sub="Don't give up! / あきらめないで！できるよ！";
+  }
+
+  // Lumi image
+  const lumiEl = document.getElementById('result-lumi');
+  const LUMI_FILTERS = {
+    3: 'drop-shadow(0 8px 22px rgba(240,208,96,0.6))',
+    2: 'drop-shadow(0 8px 22px rgba(0,0,0,0.5))',
+    1: 'drop-shadow(0 8px 22px rgba(0,0,0,0.5)) grayscale(0.45) brightness(0.82)'
+  };
+  lumiEl.style.filter = LUMI_FILTERS[stars];
+  lumiEl.onerror = function(){ this.onerror=null; this.src='lumi.png'; this.style.filter=LUMI_FILTERS[stars]; };
+  lumiEl.src = `lumi_${stars}star${stars>1?'s':''}.png`;
+
+  document.getElementById('result-emoji').textContent = emoji;
+  const tEl = document.getElementById('result-title');
+  tEl.className = 'result-title ' + cls;
+  tEl.textContent = title;
+  document.getElementById('result-sub').textContent = sub;
+  document.getElementById('final-score').textContent = score.toLocaleString();
+  document.getElementById('result-time').textContent = '⏱️ ' + timeStr + (perfectGame ? '  ✨ Perfect!' : '');
+
+  // Save score and check new best
+  const isBest = saveScore(score, elapsedSec, selectedMode);
+  document.getElementById('result-newbest').classList.toggle('hidden', !isBest);
+
+  sfxFanfare(stars);
+  setTimeout(() => {
+    for (let i = 1; i <= 3; i++) {
+      const s = document.getElementById(`star${i}`);
+      if (i <= stars) setTimeout(() => s.classList.add('lit'), (i-1)*300);
+    }
+  }, 200);
+
+  if (mistakes.length > 0) {
+    document.getElementById('mistakes-list').classList.remove('hidden');
+    const body = document.getElementById('mistakes-body');
+    body.innerHTML = '';
+    mistakes.forEach(m => {
+      const row = document.createElement('div');
+      row.className = 'mistake-item';
+      row.innerHTML = `
+        <span class="mistake-wrong">${m.typed || '(time up)'}</span>
+        <span class="mistake-arrow">→</span>
+        <span class="mistake-correct">${m.q.answer}</span>`;
+      body.appendChild(row);
+    });
+  }
+}
+
+function goTitle() {
+  document.getElementById('mistakes-list').classList.add('hidden');
+  stopBgm();
+  show('screen-title');
+}
+
+function updateComboDisplay() {
+  const el = document.getElementById('combo-badge');
+  if (combo >= 3) {
+    const labels = {3:'🔥 3 COMBO!', 4:'🔥 4 COMBO!', 5:'⚡ 5 COMBO! ×1.5', 6:'⚡ 6 COMBO! ×1.5', 7:'⚡ 7 COMBO! ×1.5', 8:'💥 8 COMBO! ×2.0'};
+    el.textContent = combo >= 8 ? `💥 ${combo} COMBO! ×2.0` : (labels[combo] || `⚡ ${combo} COMBO! ×1.5`);
+    el.classList.remove('show');
+    void el.offsetWidth;
+    el.classList.add('show');
+  } else {
+    el.classList.remove('show');
+    el.textContent = '';
+  }
+}
+
+// ── Storage ──
+const Store = { mem:{}, get(k){try{return localStorage.getItem(k);}catch(e){return this.mem[k]??null;}}, set(k,v){try{localStorage.setItem(k,v);}catch(e){this.mem[k]=v;}} };
+function saveScore(sc, timeSec, mode) {
+  const key = 'typingQuest_scores_' + mode;
+  let list = [];
+  try { list = JSON.parse(Store.get(key)||'[]'); } catch(e){}
+  list.push({score:sc, time:timeSec});
+  list.sort((a,b) => b.score - a.score || a.time - b.time);
+  list = list.slice(0,5);
+  Store.set(key, JSON.stringify(list));
+  return sc > 0 && list[0].score === sc && list.findIndex(e=>e.score===sc&&e.time===timeSec)===0;
+}
+function showScores(mode) {
+  mode = mode || selectedMode;
+  const key = 'typingQuest_scores_' + mode;
+  // highlight active tab
+  document.getElementById('tab-quick').style.background = mode==='quick' ? 'rgba(255,255,255,0.12)' : 'transparent';
+  document.getElementById('tab-full').style.background  = mode==='full'  ? 'rgba(255,255,255,0.12)' : 'transparent';
+  let list = [];
+  try { list = JSON.parse(Store.get(key)||'[]'); } catch(e){}
+  const box = document.getElementById('score-list');
+  if (!list.length) {
+    box.innerHTML = '<div style="padding:22px;text-align:center;font-family:\'Zen Maru Gothic\',sans-serif;font-size:0.84rem;color:var(--brown)">No scores yet!<br>まだスコアがないよ</div>';
+  } else {
+    box.innerHTML = list.map((e,i) => {
+      const mm = Math.floor(e.time/60), ss = String(e.time%60).padStart(2,'0');
+      return `<div class="score-item">
+        <div class="score-rank ${i===0?'gold':''}">${i===0?'#1':'#'+(i+1)}</div>
+        <div class="score-val">${e.score.toLocaleString()}</div>
+        <div class="score-time">⏱️ ${mm}:${ss}</div>
+      </div>`;
+    }).join('');
+  }
+  show('screen-scores');
+}
+
+// ── BGM ──
+let bgmAudio = null, bgmMuted = false;
+function startBgm() {
+  if (!bgmAudio) {
+    bgmAudio = new Audio('exploria.mp3');
+    bgmAudio.loop = true;
+    bgmAudio.volume = 0.25;
+  }
+  bgmAudio.currentTime = 0;
+  bgmAudio.muted = bgmMuted;
+  bgmAudio.play().catch(()=>{});
+}
+function stopBgm() {
+  if (bgmAudio) { bgmAudio.pause(); bgmAudio.currentTime = 0; }
+}
+function toggleBgm() {
+  bgmMuted = !bgmMuted;
+  if (bgmAudio) bgmAudio.muted = bgmMuted;
+  document.getElementById('bgm-btn').textContent = bgmMuted ? '🔇' : '🎵';
+}
+
+// ── Audio ──
+let audioCtx = null;
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(freq, type, duration, vol=0.28, fadeOut=true) {
+  try {
+    const ctx = getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = type; osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    if (fadeOut) gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + duration);
+  } catch(e) {}
+}
+function sfxCorrect() {
+  playTone(523,'sine',0.12,0.22);
+  setTimeout(() => playTone(659,'sine',0.12,0.22), 80);
+  setTimeout(() => playTone(784,'sine',0.2,0.22),  160);
+}
+function sfxWrong() {
+  playTone(220,'sawtooth',0.08,0.18);
+  setTimeout(() => playTone(180,'sawtooth',0.15,0.18), 80);
+}
+function sfxType() { playTone(900+Math.random()*200,'triangle',0.07,0.15); }
+function sfxTimerWarn() { playTone(880,'square',0.06,0.1); }
+function sfxFanfare(stars) {
+  if (stars===3) {
+    [523,659,784,1047].forEach((n,i) => setTimeout(() => playTone(n,'sine',0.25,0.28), i*120));
+    setTimeout(() => playTone(1047,'sine',0.5,0.28), 4*120);
+  } else if (stars===2) {
+    [440,554,659].forEach((n,i) => setTimeout(() => playTone(n,'sine',0.22,0.25), i*110));
+  } else {
+    playTone(330,'sine',0.15,0.18);
+    setTimeout(() => playTone(294,'sine',0.2,0.18), 150);
+  }
+}
+let timerWarnInterval = null;
+function startTimerWarning() {
+  if (timerWarnInterval) return;
+  timerWarnInterval = setInterval(sfxTimerWarn, 1000);
+}
+function stopTimerWarning() {
+  if (timerWarnInterval) { clearInterval(timerWarnInterval); timerWarnInterval = null; }
+}
+
+function confirmResetTQ(){
+  if(confirm('Reset the game? / ゲームをリセットしますか？')){
+    clearInterval(timerInterval);
+    stopTimerWarning();
+    goTitle();
+  }
+}
+setupBackground();
+show('screen-title');
+</script>
+</body>
+</html>
